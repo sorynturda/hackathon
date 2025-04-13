@@ -1,26 +1,37 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import url('https://fonts.cdnfonts.com/css/helvetica-neue-9');
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer components {
+  .h1 {
+    @apply font-['Helvetica_Neue'] font-bold;
+    font-size: clamp(64px, 10vw, 180px);
+    line-height: clamp(80px, 7vw, 130px);
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  
+  .h2 {
+    @apply font-helvetica-neue font-bold;
+    font-size: clamp(36px, 7vw, 96px);
+    line-height: clamp(42px, 5vw, 69px);
+  }
+  
+  .h3 {
+    @apply font-helvetica-neue font-bold;
+    font-size: clamp(28px, 7vw, 48px);
+    line-height: clamp(36px, 5.5vw, 76px);
+  }
+  
+  .body {
+    @apply font-sans font-normal;
+    font-size: clamp(18px, 1.5vw, 24px);
+    line-height: clamp(22px, 1.4vw, 22.4px);
+  }
+  
+  .body-small {
+    @apply font-sans font-normal;
+    font-size: clamp(14px, 1vw, 16px);
+    line-height: clamp(20px, 1.4vw, 22.4px);
+  }
 }
