@@ -16,14 +16,11 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
-
-    @Column(name = "role", nullable = false)
-    private String role;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -72,14 +69,6 @@ public class User {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {
