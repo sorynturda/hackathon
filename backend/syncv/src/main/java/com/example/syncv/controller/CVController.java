@@ -107,4 +107,21 @@ public class CVController {
                     .body("Failed to retrieve cv: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCV(@PathVariable Long id) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+            cvService.deleteCV(id, currentUserEmail);
+            return ResponseEntity.ok("CV with id: " + id + " deleted successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete CV: " + e.getMessage());
+        }
+
+    }
 }

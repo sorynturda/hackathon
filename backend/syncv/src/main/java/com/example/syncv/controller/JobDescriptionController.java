@@ -116,7 +116,7 @@ public class JobDescriptionController {
             String currentUserEmail = authentication.getName();
 
             jobDescriptionService.deleteJobDescription(id, currentUserEmail);
-            return ResponseEntity.ok("Job description deleted successfully!");
+            return ResponseEntity.ok("Job description with id: " + id + " deleted successfully!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {

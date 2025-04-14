@@ -97,7 +97,8 @@ public class JobDescriptionService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
 
-        if(!jobDescription.getUser().getId().equals(user.getId()));
+        if (!jobDescription.getUser().getId().equals(user.getId()))
+            throw new RuntimeException("You are not authorized to delete this Job Description");
         jobDescriptionRepository.delete(jobDescription);
     }
 
