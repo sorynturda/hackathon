@@ -83,7 +83,7 @@ public class JDService {
                                 jd.getSize(),
                                 jd.getType(),
                                 jd.getUploadedAt(),
-                                jd.getId(),
+                                jd.getUser().getId(),
                                 jd.getId()
                         )
         ).toList();
