@@ -14,8 +14,9 @@ public class JobDescriptionDTO {
     public JobDescriptionDTO() {
     }
 
-    public JobDescriptionDTO(String name, Long size, String type, LocalDateTime uploadedAt, Long userId, Long id) {
+    public JobDescriptionDTO(String name, String userName, Long size, String type, LocalDateTime uploadedAt, Long userId, Long id) {
         this.name = name;
+        this.userName = userName;
         this.size = size;
         this.type = type;
         this.uploadedAt = uploadedAt;

@@ -5,7 +5,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "cvs")
+@Entity
+@Table(name="cvs")
 public class CV {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,10 +16,11 @@ public class CV {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Lob
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "data", nullable = false)
     private byte[] data;
 
