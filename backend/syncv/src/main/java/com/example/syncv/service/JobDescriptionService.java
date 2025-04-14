@@ -41,6 +41,7 @@ public class JobDescriptionService {
         }
 
         // doar pentru fisierele docx
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types // pentru pdf si alte tipuri
         String fileType = file.getContentType();
         if (fileType == null || !fileType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
             throw new IllegalArgumentException("Only DOCX files are supported! Provided type: " + fileType);
@@ -50,7 +51,7 @@ public class JobDescriptionService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
 
         /// EDGE CASE: FILE MAY ALREADY EXIST ONLY IT IS UPLOADED BY THE SAME USER
-        if(jobDescriptionRepository.findByUserAndName(user.getId(), fileName).isPresent())
+        if(jobDescriptionRepository.findByUserIdAndName(user.getId(), fileName).isPresent())
             throw new IllegalArgumentException("File: " + fileName + " already exists!");
 
 

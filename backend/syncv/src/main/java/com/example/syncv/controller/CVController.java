@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -56,7 +57,40 @@ public class CVController {
         }
     }
 
-    @GetMapping(path="/{id}")
+    @PostMapping(path = "/upload-multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadCVs(@RequestParam("files") MultipartFile[] files) {
+        try {
+            // Get authenticated user (by email)
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+            List<CVDTO> cvDTOs = new ArrayList<>();
+
+            for (MultipartFile file : files) {
+
+                CV savedCV = cvService.store(file, currentUserEmail);
+
+                CVDTO cvDTO = new CVDTO(
+                        savedCV.getId(),
+                        savedCV.getUser().getId(),
+                        savedCV.getUser().getName(),
+                        savedCV.getName(),
+                        savedCV.getSize(),
+                        savedCV.getType(),
+                        savedCV.getUploadedAt()
+                );
+                cvDTOs.add(cvDTO);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(cvDTOs);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload CV: " + e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "/{id}")
     public ResponseEntity<?> getCV(@PathVariable Long id) {
         try {
             CV cv = cvService.getCV(id);
@@ -77,7 +111,7 @@ public class CVController {
         }
     }
 
-    @GetMapping(path="/download/{id}")
+    @GetMapping(path = "/download/{id}")
     public ResponseEntity<?> downloadCV(@PathVariable Long id) {
         try {
             CV cv = cvService.getCV(id);
@@ -109,7 +143,7 @@ public class CVController {
         }
     }
 
-    @DeleteMapping(path="/{id}")
+    @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> deleteCV(@PathVariable Long id) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

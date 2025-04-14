@@ -15,5 +15,5 @@ public interface JobDescriptionRepository extends JpaRepository<JobDescription, 
 
     @Query("SELECT new com.example.syncv.model.dto.JobDescriptionDTO(jd.name, u.name, jd.size, jd.type, jd.uploadedAt, jd.user.id, jd.id)" +
             " FROM JobDescription jd JOIN jd.user u WHERE  jd.user.id = :userId AND jd.name = :fileName")
-    Optional<JobDescriptionDTO> findByUserAndName(Long userId, String fileName);
+    Optional<JobDescriptionDTO> findByUserIdAndName(Long userId, String fileName);
 }

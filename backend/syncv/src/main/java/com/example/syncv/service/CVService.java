@@ -51,6 +51,9 @@ public class CVService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
 
+        if (cvRepository.findByUserIdAndName(user.getId(), fileName).isPresent())
+            throw new IllegalArgumentException("File: " + fileName + " already exists!");
+
         CV cv = new CV();
         cv.setName(fileName);
         cv.setData(file.getBytes());
