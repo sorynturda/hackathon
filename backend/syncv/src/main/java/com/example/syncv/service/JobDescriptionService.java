@@ -3,7 +3,7 @@ package com.example.syncv.service;
 import com.example.syncv.model.dto.JobDescriptionDTO;
 import com.example.syncv.model.entity.JobDescription;
 import com.example.syncv.model.entity.User;
-import com.example.syncv.repository.JDRepository;
+import com.example.syncv.repository.JobDescriptionRepository;
 import com.example.syncv.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,16 +15,17 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+// if something is broken here, fix the problem here and in CVService too
 @Service
-public class JDService {
+public class JobDescriptionService {
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-    private final JDRepository jdRepository;
+    private final JobDescriptionRepository jobDescriptionRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public JDService(JDRepository jdRepository, UserRepository userRepository) {
-        this.jdRepository = jdRepository;
+    public JobDescriptionService(JobDescriptionRepository jobDescriptionRepository, UserRepository userRepository) {
+        this.jobDescriptionRepository = jobDescriptionRepository;
         this.userRepository = userRepository;
     }
 
@@ -45,7 +46,7 @@ public class JDService {
             throw new IllegalArgumentException("Only DOCX files are supported! Provided type: " + fileType);
         }
 
-//        if(jdRepository.findByName(fileName))
+//        if(jobDescriptionRepository.findByName(fileName))
 //            throw new IllegalArgumentException("A file with this name already exists!");
 
         User user = userRepository.findByEmail(userEmail)
@@ -59,11 +60,11 @@ public class JDService {
         jobDescription.setUploadedAt(LocalDateTime.now());
         jobDescription.setUser(user);
 
-        return jdRepository.save(jobDescription);
+        return jobDescriptionRepository.save(jobDescription);
     }
 
     public JobDescription getJobDescription(Long id) {
-        return jdRepository.findById(id)
+        return jobDescriptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job Description not found with id: " + id));
     }
 
@@ -71,6 +72,7 @@ public class JDService {
         JobDescription jd = getJobDescription(id);
         return jd.getData();
     }
+
     @Transactional
     public List<JobDescriptionDTO> getAllJobDescriptionsByUser(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
@@ -88,4 +90,15 @@ public class JDService {
                         )
         ).toList();
     }
+
+    public void deleteJobDescription(Long id, String userEmail) {
+        JobDescription jobDescription = jobDescriptionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Job description not found with id:" + id));
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        if(!jobDescription.getUser().getId().equals(user.getId()));
+        jobDescriptionRepository.delete(jobDescription);
+    }
+
 }

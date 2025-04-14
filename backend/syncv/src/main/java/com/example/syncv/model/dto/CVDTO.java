@@ -14,9 +14,10 @@ public class CVDTO {
     public CVDTO() {
     }
 
-    public CVDTO(Long id, Long userId, String name, Long size, String type, LocalDateTime uploadedAt) {
+    public CVDTO(Long id, Long userId, String userName, String name, Long size, String type, LocalDateTime uploadedAt) {
         this.id = id;
         this.userId = userId;
+        this.userName = userName;
         this.name = name;
         this.size = size;
         this.type = type;

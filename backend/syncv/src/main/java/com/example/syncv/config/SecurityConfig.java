@@ -59,6 +59,7 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/api/job-descriptions/**").authenticated()
+                                .requestMatchers("/api/cvs/**").authenticated()
                                 .anyRequest().authenticated()
                 );
 

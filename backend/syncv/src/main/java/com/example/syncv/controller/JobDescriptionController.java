@@ -2,7 +2,7 @@ package com.example.syncv.controller;
 
 import com.example.syncv.model.dto.JobDescriptionDTO;
 import com.example.syncv.model.entity.JobDescription;
-import com.example.syncv.service.JDService;
+import com.example.syncv.service.JobDescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +18,11 @@ import java.util.List;
 @RequestMapping("/api/job-descriptions")
 public class JobDescriptionController {
 
-    private final JDService jdService;
+    private final JobDescriptionService jobDescriptionService;
 
     @Autowired
-    public JobDescriptionController(JDService jdService) {
-        this.jdService = jdService;
+    public JobDescriptionController(JobDescriptionService jobDescriptionService) {
+        this.jobDescriptionService = jobDescriptionService;
     }
 
     @PostMapping("/upload")
@@ -33,17 +33,17 @@ public class JobDescriptionController {
             String currentUserEmail = authentication.getName();
 
 
-            JobDescription savedJD = jdService.store(file, currentUserEmail);
+            JobDescription savedJD = jobDescriptionService.store(file, currentUserEmail);
 
 
             JobDescriptionDTO jdDTO = new JobDescriptionDTO(
-                savedJD.getName(),
-                savedJD.getUser().getName(),
-                savedJD.getSize(),
-                savedJD.getType(),
-                savedJD.getUploadedAt(),
-                savedJD.getUser().getId(),
-                savedJD.getId()
+                    savedJD.getName(),
+                    savedJD.getUser().getName(),
+                    savedJD.getSize(),
+                    savedJD.getType(),
+                    savedJD.getUploadedAt(),
+                    savedJD.getUser().getId(),
+                    savedJD.getId()
             );
 
             return ResponseEntity.status(HttpStatus.CREATED).body(jdDTO);
@@ -58,18 +58,17 @@ public class JobDescriptionController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getJobDescription(@PathVariable Long id) {
         try {
-            JobDescription jd = jdService.getJobDescription(id);
+            JobDescription jd = jobDescriptionService.getJobDescription(id);
 
             JobDescriptionDTO jdDTO = new JobDescriptionDTO(
-                jd.getName(),
-                jd.getUser().getName(),
-                jd.getSize(),
-                jd.getType(),
-                jd.getUploadedAt(),
-                jd.getUser().getId(),
-                jd.getId()
+                    jd.getName(),
+                    jd.getUser().getName(),
+                    jd.getSize(),
+                    jd.getType(),
+                    jd.getUploadedAt(),
+                    jd.getUser().getId(),
+                    jd.getId()
             );
-            jdDTO.setUserName(jd.getUser().getName());
 
             return ResponseEntity.ok(jdDTO);
         } catch (RuntimeException e) {
@@ -80,8 +79,8 @@ public class JobDescriptionController {
     @GetMapping("/download/{id}")
     public ResponseEntity<?> downloadJobDescription(@PathVariable Long id) {
         try {
-            JobDescription jd = jdService.getJobDescription(id);
-            byte[] data = jdService.getJobDescriptionData(id);
+            JobDescription jd = jobDescriptionService.getJobDescription(id);
+            byte[] data = jobDescriptionService.getJobDescriptionData(id);
 
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=\"" + jd.getName() + "\"")
@@ -100,14 +99,29 @@ public class JobDescriptionController {
             String currentUserEmail = authentication.getName();
 
             System.out.println("toate fisierele");
-            List<JobDescriptionDTO> jdDTOs = jdService.getAllJobDescriptionsByUser(currentUserEmail);
-
+            List<JobDescriptionDTO> jdDTOs = jobDescriptionService.getAllJobDescriptionsByUser(currentUserEmail);
 
 
             return ResponseEntity.ok(jdDTOs);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to retrieve job descriptions: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteJobDescription(@PathVariable Long id) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+            jobDescriptionService.deleteJobDescription(id, currentUserEmail);
+            return ResponseEntity.ok("Job description deleted successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete job description: " + e.getMessage());
         }
     }
 }
