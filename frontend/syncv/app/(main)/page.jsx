@@ -4,6 +4,7 @@ import About1 from "./sections/About1";
 import About2 from "./sections/About2";
 import About3 from "./sections/About3";
 import Words from "./sections/Words";
+import ParallaxZoom from "./sections/ParallaxZoom";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <About2 />
       <About3 />
       <Words />
+      <ParallaxZoom />
     </div>
   );
 }

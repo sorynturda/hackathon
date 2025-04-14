@@ -13,7 +13,7 @@ const RotatingText = () => {
   // Rotații
   const uploadRotate = useTransform(
     scrollYProgress,
-    [0.2, 0.3, 0.4],
+    [0.3, 0.3, 0.4],
     [90, 0, -90]
   );
 
