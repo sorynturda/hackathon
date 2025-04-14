@@ -5,17 +5,20 @@ import com.example.syncv.model.entity.JobDescription;
 import com.example.syncv.service.JobDescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.print.attribute.standard.Media;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/job-descriptions")
+@RequestMapping("/api/jds")
 public class JobDescriptionController {
 
     private final JobDescriptionService jobDescriptionService;
@@ -25,7 +28,7 @@ public class JobDescriptionController {
         this.jobDescriptionService = jobDescriptionService;
     }
 
-    @PostMapping("/upload")
+    @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadJobDescription(@RequestParam("file") MultipartFile file) {
         try {
             // Get authenticated user (by email)
@@ -55,7 +58,38 @@ public class JobDescriptionController {
         }
     }
 
-    @GetMapping("/{id}")
+    @PostMapping(path = "/upload-multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadJobDescriptions(@RequestParam("files") MultipartFile[] files) {
+        try {
+            // Get authenticated user (by email)
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+            List<JobDescriptionDTO> jdDTOs = new ArrayList<>();
+            for (MultipartFile file : files) {
+                JobDescription savedJD = jobDescriptionService.store(file, currentUserEmail);
+
+                JobDescriptionDTO jdDTO = new JobDescriptionDTO(
+                        savedJD.getName(),
+                        savedJD.getUser().getName(),
+                        savedJD.getSize(),
+                        savedJD.getType(),
+                        savedJD.getUploadedAt(),
+                        savedJD.getUser().getId(),
+                        savedJD.getId()
+                );
+                jdDTOs.add(jdDTO);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(jdDTOs);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload job description: " + e.getMessage());
+        }
+
+    }
+
+    @GetMapping(path = "/{id}")
     public ResponseEntity<?> getJobDescription(@PathVariable Long id) {
         try {
             JobDescription jd = jobDescriptionService.getJobDescription(id);
@@ -76,7 +110,7 @@ public class JobDescriptionController {
         }
     }
 
-    @GetMapping("/download/{id}")
+    @GetMapping(path = "/download/{id}")
     public ResponseEntity<?> downloadJobDescription(@PathVariable Long id) {
         try {
             JobDescription jd = jobDescriptionService.getJobDescription(id);
@@ -91,7 +125,7 @@ public class JobDescriptionController {
         }
     }
 
-    @GetMapping("/my-job-descriptions")
+    @GetMapping
     public ResponseEntity<?> getAllMyJobDescriptions() {
         try {
             // Get authenticated user
@@ -109,7 +143,7 @@ public class JobDescriptionController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> deleteJobDescription(@PathVariable Long id) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

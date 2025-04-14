@@ -46,11 +46,13 @@ public class JobDescriptionService {
             throw new IllegalArgumentException("Only DOCX files are supported! Provided type: " + fileType);
         }
 
-//        if(jobDescriptionRepository.findByName(fileName))
-//            throw new IllegalArgumentException("A file with this name already exists!");
-
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
+
+        /// EDGE CASE: FILE MAY ALREADY EXIST ONLY IT IS UPLOADED BY THE SAME USER
+        if(jobDescriptionRepository.findByUserAndName(user.getId(), fileName).isPresent())
+            throw new IllegalArgumentException("File: " + fileName + " already exists!");
+
 
         JobDescription jobDescription = new JobDescription();
         jobDescription.setName(fileName);

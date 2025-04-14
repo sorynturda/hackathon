@@ -5,6 +5,7 @@ import com.example.syncv.model.entity.CV;
 import com.example.syncv.service.CVService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +25,7 @@ public class CVController {
         this.cvService = cvService;
     }
 
-    @PostMapping("/upload")
+    @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadCV(@RequestParam("file") MultipartFile file) {
         try {
             // Get authenticated user (by email)
@@ -55,7 +56,7 @@ public class CVController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(path="/{id}")
     public ResponseEntity<?> getCV(@PathVariable Long id) {
         try {
             CV cv = cvService.getCV(id);
@@ -76,7 +77,7 @@ public class CVController {
         }
     }
 
-    @GetMapping("/download/{id}")
+    @GetMapping(path="/download/{id}")
     public ResponseEntity<?> downloadCV(@PathVariable Long id) {
         try {
             CV cv = cvService.getCV(id);
@@ -91,7 +92,7 @@ public class CVController {
         }
     }
 
-    @GetMapping("/my-cvs")
+    @GetMapping
     public ResponseEntity<?> getAllMyCVs() {
         try {
             // Get authenticated user
@@ -108,7 +109,7 @@ public class CVController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(path="/{id}")
     public ResponseEntity<?> deleteCV(@PathVariable Long id) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
