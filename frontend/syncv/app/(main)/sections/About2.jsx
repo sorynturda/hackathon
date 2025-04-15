@@ -14,7 +14,7 @@ const About2 = () => {
   const scale = useTransform(
     scrollYProgress,
     [0.3, 0.4, 0.65, 0.8],
-    [0, 1, 1, 30]
+    [0, 1, 1, 70]
   );
   const x = useTransform(
     scrollYProgress,
@@ -36,7 +36,7 @@ const About2 = () => {
       <Layout>
         <div
           ref={containerRef}
-          className="col-start-8 col-span-4 w-full h-[150vh] /border-2 border-red relative pointer-events-none -mt-[70vh]"
+          className="col-start-8 col-span-4 max-sm:col-start-4 max-sm:col-span-8 w-full h-[150vh] /border-2 border-red relative pointer-events-none -mt-[70vh]"
         >
           <motion.svg
             style={{ scale: scale, x: x }}

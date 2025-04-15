@@ -70,10 +70,10 @@ const ParallaxZoom = () => {
           style={{ scale: containerScale }}
           className="top-0 h-screen flex items-center justify-center overflow-hidden"
         >
-          <div className="grid grid-cols-5 gap-8 w-full px-24">
+          <div className="grid grid-cols-5 gap-1 sm:gap-3 md:gap-8 w-full px-24 max-md:scale-125 max-sm:scale-150">
             <motion.div
               style={{ scale: cv1Scale }}
-              className="col-span-1 origin-center z-[1]"
+              className="col-span-1 origin-center z-[1] max-sm:scale-150"
             >
               <img
                 src="/images/cv2.png"
@@ -102,7 +102,7 @@ const ParallaxZoom = () => {
               />
               {/* Border container */}
               <motion.div
-                className="absolute inset-0"
+                className="absolute inset-0 "
                 style={{
                   background: `linear-gradient(90deg, #EC6B2D 100%, #EC6B2D 100%) top left no-repeat,
                              linear-gradient(0deg, #EC6B2D 100%, #EC6B2D 100%) top right no-repeat,
