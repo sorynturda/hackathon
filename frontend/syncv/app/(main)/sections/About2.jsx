@@ -15,12 +15,11 @@ const About2 = () => {
     scrollYProgress,
     [0.3, 0.4, 0.65, 0.8],
     [0, 1, 1, 70]
-    [0, 1, 1, 30]
   );
   const x = useTransform(
     scrollYProgress,
     [0.3, 0.4, 0.65, 0.8],
-    ["-5vw", "0vw", "0vw", "-20vw"] // Using vw units
+    ["-5vw", "0vw", "0vw", "-20vw"]
   );
   const opacity = useTransform(
     scrollYProgress,
