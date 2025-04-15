@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  backend-service:
+    build:
+      context: ./backend/syncv
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend/syncv:/app
+      - maven-repo:/root/.m2
+    ports:
+      - 5001:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    network_mode: bridge
+    
+volumes:
+  maven-repo:
