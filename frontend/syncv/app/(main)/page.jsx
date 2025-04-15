@@ -5,6 +5,7 @@ import About2 from "./sections/About2";
 import About3 from "./sections/About3";
 import Words from "./sections/Words";
 import ParallaxZoom from "./sections/ParallaxZoom";
+import Footer from "./sections/Footer";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <About3 />
       <Words />
       <ParallaxZoom />
+      <Footer />
     </div>
   );
 }
