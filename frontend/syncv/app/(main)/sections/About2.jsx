@@ -15,6 +15,7 @@ const About2 = () => {
     scrollYProgress,
     [0.3, 0.4, 0.65, 0.8],
     [0, 1, 1, 70]
+    [0, 1, 1, 30]
   );
   const x = useTransform(
     scrollYProgress,
