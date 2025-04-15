@@ -36,16 +36,40 @@ function Model({ modelPath }) {
       scale: 1.2,
     },
     {
-      scrollY: 1.05, // 1 viewport down
+      scrollY: 1.7, // 1 viewport down
       position: [30, 0, 0],
-      rotation: [-0.3, -0.4, 0],
+      rotation: [-0.3, -0.6, 0],
+      scale: 1.2,
+    },
+    {
+      scrollY: 2, // 2 viewports down
+      position: [-30, 0, 0],
+      rotation: [-0.3, 0.2, 0],
       scale: 1.2,
     },
     {
       scrollY: 2.5, // 2 viewports down
-      position: [-2, 0, 1],
-      rotation: [-0.3, 0.2, 0],
-      scale: 0.9,
+      position: [-30, 0, 0],
+      rotation: [-0.3, 0.4, 0.1],
+      scale: 1.2,
+    },
+    {
+      scrollY: 4, // 2 viewports down
+      position: [0, 0, -70],
+      rotation: [0.02, 0, 0],
+      scale: 2.05,
+    },
+    {
+      scrollY: 4.4, // 2 viewports down
+      position: [0, 0, -70],
+      rotation: [0.02, 0, 0],
+      scale: 2.05,
+    },
+    {
+      scrollY: 4.5, // 2 viewports down
+      position: [0, 0, -100],
+      rotation: [0.02, 0, 0],
+      scale: 2.05,
     },
   ];
 
@@ -78,7 +102,7 @@ export default function ThreeScene({ modelPath = "/models/cv.glb" }) {
   return (
     <>
       {isLoading && <Loader />}
-      <div className="fixed inset-0 z-10 pointer-events-none">
+      <div className="fixed inset-0 z-10 pointer-events-none ">
         <Canvas
           camera={{ position: [0, 70, 5], fov: 60 }}
           onCreated={() => setIsLoading(false)}
