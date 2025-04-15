@@ -35,11 +35,11 @@ const About3 = () => {
           className="w-full h-fit /border-2 border-green sticky top-[70vh] flex flex-col  items-center"
         >
           {/* Title */}
-          <div className="h2 w-[50vw] text-black text-center /border-2 border-red flex justify-center">
+          <div className="h2 w-[50vw] max-md:w-[70vw] max-sm:w-[80vw] text-black text-center /border-2 border-red flex justify-center">
             Clear Results You Can Trust
           </div>
           {/* Description */}
-          <div className="body-small pt-[20px]  w-[30vw] ">
+          <div className="body-small pt-[20px]  w-[30vw] max-md:w-[50vw] max-sm:w-[70vw] ">
             Just upload documents and let the system do the rest - it compares
             key requirements with candidate skills, ranks matches based on
             relevance, and presents clear results you can act on immediately.

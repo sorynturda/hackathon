@@ -8,7 +8,8 @@ const Footer = () => {
     <div className="w-full h-screen relative bg-white">
       <Layout>
         <div className="col-start-2 col-span-10 rounded-sm  mt-[20%]">
-          <div className="flex">
+          <div className="flex max-lg:flex-col">
+            {/* Left side */}
             <div className="h2 text-white bg-black p-[40px] min-w-[60%]">
               Transform
               <br />
@@ -19,8 +20,9 @@ const Footer = () => {
               process today
               <span className="text-accent">.</span>
             </div>
-            <div className="bg-white border-2 border-black w-full relative">
-              <div className="absolute bottom-0 h1  -mb-[9%] -ml-[1vw]">
+            {/* Right side */}
+            <div className="bg-white border-2 border-black max-lg:min-h-[30vh] w-full relative">
+              <div className="absolute bottom-0 h1   max-lg:-mb-[8%] max-md:-mb-[9%] max-lg:-ml-[2vw] -mb-[9%] -ml-[1vw] ">
                 <Logo width={650} />
               </div>
               <div className="absolute top-0 right-0  w-[40%] h-[50%]">
