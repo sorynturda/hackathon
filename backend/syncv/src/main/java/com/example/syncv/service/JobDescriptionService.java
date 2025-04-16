@@ -83,13 +83,13 @@ public class JobDescriptionService {
         return user.getJobDescriptions().stream().map(
                 jd ->
                         new JobDescriptionDTO(
-                                jd.getName(),
+                                jd.getId(),
+                                jd.getUser().getId(),
                                 jd.getUser().getName(),
+                                jd.getName(),
                                 jd.getSize(),
                                 jd.getType(),
-                                jd.getUploadedAt(),
-                                jd.getUser().getId(),
-                                jd.getId()
+                                jd.getUploadedAt()
                         )
         ).toList();
     }

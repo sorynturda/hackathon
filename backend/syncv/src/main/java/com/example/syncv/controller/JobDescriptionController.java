@@ -3,7 +3,9 @@ package com.example.syncv.controller;
 import com.example.syncv.model.dto.JobDescriptionDTO;
 import com.example.syncv.model.entity.JobDescription;
 import com.example.syncv.service.JobDescriptionService;
+import com.example.syncv.service.MessagePublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +22,17 @@ import java.util.List;
 @RequestMapping("/api/jds")
 public class JobDescriptionController {
 
+
     private final JobDescriptionService jobDescriptionService;
+    private final MessagePublisherService messagePublisherService;
+
+    @Value("${redis.channel}")
+    private String channel;
 
     @Autowired
-    public JobDescriptionController(JobDescriptionService jobDescriptionService) {
+    public JobDescriptionController(JobDescriptionService jobDescriptionService, MessagePublisherService messagePublisherService) {
         this.jobDescriptionService = jobDescriptionService;
+        this.messagePublisherService = messagePublisherService;
     }
 
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -39,15 +47,15 @@ public class JobDescriptionController {
 
 
             JobDescriptionDTO jdDTO = new JobDescriptionDTO(
-                    savedJD.getName(),
+                    savedJD.getId(),
+                    savedJD.getUser().getId(),
                     savedJD.getUser().getName(),
+                    savedJD.getName(),
                     savedJD.getSize(),
                     savedJD.getType(),
-                    savedJD.getUploadedAt(),
-                    savedJD.getUser().getId(),
-                    savedJD.getId()
+                    savedJD.getUploadedAt()
             );
-
+            messagePublisherService.publish(channel, jdDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(jdDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -68,13 +76,13 @@ public class JobDescriptionController {
                 JobDescription savedJD = jobDescriptionService.store(file, currentUserEmail);
 
                 JobDescriptionDTO jdDTO = new JobDescriptionDTO(
-                        savedJD.getName(),
+                        savedJD.getId(),
+                        savedJD.getUser().getId(),
                         savedJD.getUser().getName(),
+                        savedJD.getName(),
                         savedJD.getSize(),
                         savedJD.getType(),
-                        savedJD.getUploadedAt(),
-                        savedJD.getUser().getId(),
-                        savedJD.getId()
+                        savedJD.getUploadedAt()
                 );
                 jdDTOs.add(jdDTO);
             }
@@ -94,13 +102,13 @@ public class JobDescriptionController {
             JobDescription jd = jobDescriptionService.getJobDescription(id);
 
             JobDescriptionDTO jdDTO = new JobDescriptionDTO(
-                    jd.getName(),
+                    jd.getId(),
+                    jd.getUser().getId(),
                     jd.getUser().getName(),
+                    jd.getName(),
                     jd.getSize(),
                     jd.getType(),
-                    jd.getUploadedAt(),
-                    jd.getUser().getId(),
-                    jd.getId()
+                    jd.getUploadedAt()
             );
 
             return ResponseEntity.ok(jdDTO);

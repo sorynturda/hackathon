@@ -1,6 +1,7 @@
 package com.example.syncv.controller;
 
-import com.example.syncv.service.MessagePublisher;
+
+import com.example.syncv.service.MessagePublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,16 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/test")
 public class MessageController {
 
-    private MessagePublisher messagePublisher;
+    private MessagePublisherService messagePublisherService;
 
     @Autowired
-    public MessageController(MessagePublisher messagePublisher) {
-        this.messagePublisher = messagePublisher;
+    public MessageController(MessagePublisherService messagePublisherService) {
+        this.messagePublisherService = messagePublisherService;
     }
 
     @GetMapping(path = "/publish")
     public String publishMessage(@RequestParam String message) {
-        messagePublisher.publish("etl-backend", message);
+        messagePublisherService.publish("etl-backend", message);
         return "Message published";
     }
 }
