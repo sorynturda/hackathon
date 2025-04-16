@@ -18,7 +18,8 @@ public class RedisMessageListenerConfig {
 
     @Value("${redis.port}")
     private int redisPort;
-
+    @Value("${redis.channel}")
+    private String channel;
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(redisHost, redisPort);
@@ -28,7 +29,7 @@ public class RedisMessageListenerConfig {
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory, MessageListener messageListener) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(messageListener, new PatternTopic("etl-backend"));
+        container.addMessageListener(messageListener, new PatternTopic(channel));
         return container;
     }
 

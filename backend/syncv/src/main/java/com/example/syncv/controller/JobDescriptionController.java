@@ -3,7 +3,9 @@ package com.example.syncv.controller;
 import com.example.syncv.model.dto.JobDescriptionDTO;
 import com.example.syncv.model.entity.JobDescription;
 import com.example.syncv.service.JobDescriptionService;
+import com.example.syncv.service.MessagePublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +22,17 @@ import java.util.List;
 @RequestMapping("/api/jds")
 public class JobDescriptionController {
 
+
     private final JobDescriptionService jobDescriptionService;
+    private final MessagePublisherService messagePublisherService;
+
+    @Value("${redis.channel}")
+    private String channel;
 
     @Autowired
-    public JobDescriptionController(JobDescriptionService jobDescriptionService) {
+    public JobDescriptionController(JobDescriptionService jobDescriptionService, MessagePublisherService messagePublisherService) {
         this.jobDescriptionService = jobDescriptionService;
+        this.messagePublisherService = messagePublisherService;
     }
 
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -47,7 +55,7 @@ public class JobDescriptionController {
                     savedJD.getUser().getId(),
                     savedJD.getId()
             );
-
+            messagePublisherService.publish(channel, jdDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(jdDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
