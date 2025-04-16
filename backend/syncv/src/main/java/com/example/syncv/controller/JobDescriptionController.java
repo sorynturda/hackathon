@@ -47,13 +47,13 @@ public class JobDescriptionController {
 
 
             JobDescriptionDTO jdDTO = new JobDescriptionDTO(
-                    savedJD.getName(),
+                    savedJD.getId(),
+                    savedJD.getUser().getId(),
                     savedJD.getUser().getName(),
+                    savedJD.getName(),
                     savedJD.getSize(),
                     savedJD.getType(),
-                    savedJD.getUploadedAt(),
-                    savedJD.getUser().getId(),
-                    savedJD.getId()
+                    savedJD.getUploadedAt()
             );
             messagePublisherService.publish(channel, jdDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(jdDTO);
@@ -76,13 +76,13 @@ public class JobDescriptionController {
                 JobDescription savedJD = jobDescriptionService.store(file, currentUserEmail);
 
                 JobDescriptionDTO jdDTO = new JobDescriptionDTO(
-                        savedJD.getName(),
+                        savedJD.getId(),
+                        savedJD.getUser().getId(),
                         savedJD.getUser().getName(),
+                        savedJD.getName(),
                         savedJD.getSize(),
                         savedJD.getType(),
-                        savedJD.getUploadedAt(),
-                        savedJD.getUser().getId(),
-                        savedJD.getId()
+                        savedJD.getUploadedAt()
                 );
                 jdDTOs.add(jdDTO);
             }
@@ -102,13 +102,13 @@ public class JobDescriptionController {
             JobDescription jd = jobDescriptionService.getJobDescription(id);
 
             JobDescriptionDTO jdDTO = new JobDescriptionDTO(
-                    jd.getName(),
+                    jd.getId(),
+                    jd.getUser().getId(),
                     jd.getUser().getName(),
+                    jd.getName(),
                     jd.getSize(),
                     jd.getType(),
-                    jd.getUploadedAt(),
-                    jd.getUser().getId(),
-                    jd.getId()
+                    jd.getUploadedAt()
             );
 
             return ResponseEntity.ok(jdDTO);

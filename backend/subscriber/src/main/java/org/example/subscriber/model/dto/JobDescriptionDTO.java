@@ -1,4 +1,8 @@
-package com.example.syncv.model.dto;
+package org.example.subscriber.model.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDateTime;
 
@@ -10,19 +14,6 @@ public class JobDescriptionDTO {
     private Long size;
     private String type;
     private LocalDateTime uploadedAt;
-
-    public JobDescriptionDTO() {
-    }
-
-    public JobDescriptionDTO(Long id, Long userId, String userName, String name, Long size, String type, LocalDateTime uploadedAt) {
-        this.id = id;
-        this.userId = userId;
-        this.userName = userName;
-        this.name = name;
-        this.size = size;
-        this.type = type;
-        this.uploadedAt = uploadedAt;
-    }
 
     public void setUserName(String userName) {
         this.userName = userName;
