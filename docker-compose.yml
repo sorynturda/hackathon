@@ -8,11 +8,47 @@ services:
     volumes:
       - ./backend/syncv:/app
       - maven-repo:/root/.m2
+    depends_on:
+      database:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
     ports:
       - 5001:8080
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    network_mode: bridge
     
+  backend-subscriber:
+    build:
+      context: ./backend/subscriber
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend/subscriber:/app
+      - maven-repo:/root/.m2
+    ports:
+      - 5002:8080
+    depends_on:
+      redis:
+        condition: service_started
+
+  database:
+    image: postgres
+    restart: always
+    volumes:
+      - ./backend/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres   
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    ports:
+      - 5003:5432
+        
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - 5004:6379
 volumes:
   maven-repo:
