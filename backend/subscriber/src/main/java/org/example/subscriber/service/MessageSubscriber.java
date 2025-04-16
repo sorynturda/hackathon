@@ -24,6 +24,7 @@ public class MessageSubscriber implements MessageListener {
         try {
             String body = new String(message.getBody(), StandardCharsets.UTF_8);
             String json = objectMapper.readValue(body, String.class);
+            System.out.println(json);
         } catch (Exception e) {
             e.printStackTrace();
         }
