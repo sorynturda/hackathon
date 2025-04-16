@@ -18,8 +18,10 @@ public class RedisMessageListenerConfig {
 
     @Value("${redis.port}")
     private int redisPort;
-    @Value("${redis.channel}")
+
+  @Value("${redis.channel}")
     private String channel;
+  
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(redisHost, redisPort);

@@ -1,5 +1,6 @@
 package org.example.subscriber.service;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.example.subscriber.model.dto.JobDescriptionDTO;
@@ -26,6 +27,5 @@ public class MessageSubscriber implements MessageListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
