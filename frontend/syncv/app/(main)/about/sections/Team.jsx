@@ -80,14 +80,6 @@ const OurMission = () => {
           >
             <div className="h3 text-black pb-5">ML</div>
             <div className="text-black body-small">Mihnea Bostina</div>
-          </motion.div>
-
-          {/* Spectators */}
-          <motion.div
-            className="flex flex-col items-center gap-2"
-            variants={item}
-          >
-            <div className="h3 text-black pb-5">Spectators</div>
             <div className="text-black body-small">Andrei Pintilie</div>
             <div className="text-black body-small">Tudor Bartha</div>
             <div className="text-black body-small">Razvan Bobos</div>
