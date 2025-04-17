@@ -1,77 +1,167 @@
 // components/3d/ThreeScene.jsx
 "use client";
-import React, { useRef, useState, Suspense } from "react";
+import React, { useRef, useState, Suspense, useEffect } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls, Environment } from "@react-three/drei";
 import ScrollAnimationController from "./ScrollAnimationController";
 
-// The CV Model is defined within the same file
-// Inside your ThreeCV.jsx file, update the Model component:
+// Helper function to interpolate values with a more aggressive curve for small screens
+// Uses a modified power curve to scale down more aggressively on smaller devices
+const responsiveValue = (
+  minWidth,
+  maxWidth,
+  minValue,
+  maxValue,
+  currentWidth
+) => {
+  // If smaller than min width, return min value (even smaller now)
+  if (currentWidth <= minWidth) return minValue;
+  // If larger than max width, cap at a reasonable maximum
+  if (currentWidth >= maxWidth) return maxValue;
 
-function Model({ modelPath }) {
+  // Calculate the percentage between min and max width
+  let percentage = (currentWidth - minWidth) / (maxWidth - minWidth);
+
+  // Apply a power curve to make scaling more aggressive on smaller screens
+  // Using a power of 0.7 makes the curve steeper at the beginning (small screens)
+  // This ensures more aggressive scaling for smaller devices
+  percentage = Math.pow(percentage, 0.7);
+
+  // Interpolate between min and max values
+  return minValue + percentage * (maxValue - minValue);
+};
+
+// The CV Model is defined within the same file
+function Model({ modelPath, viewportWidth }) {
   const modelRef = useRef();
   const gltf = useLoader(GLTFLoader, modelPath);
 
-  // Define keyframes based on vh units
-  const keyframes = [
+  // Base keyframe templates
+  const baseKeyframes = [
     // Hero section
     {
-      scrollY: 0, // Start of page
-      position: [0, 0, 80],
+      scrollY: 0,
       rotation: [0.02, 0, 0],
-      scale: 2.05,
     },
     {
-      scrollY: 0.05, // Start of page
-      position: [0, 0, 80],
+      scrollY: 0.05,
       rotation: [0.02, 0, 0],
-      scale: 2.05,
     },
     // About1 section
     {
-      scrollY: 1, // 1 viewport down
-      position: [30, 0, 0],
+      scrollY: 1,
       rotation: [-0.3, -0.4, 0],
-      scale: 1.2,
     },
     {
-      scrollY: 1.7, // 1 viewport down
-      position: [30, 0, 0],
+      scrollY: 1.7,
       rotation: [-0.3, -0.6, 0],
-      scale: 1.2,
     },
     {
-      scrollY: 2, // 2 viewports down
-      position: [-30, 0, 0],
+      scrollY: 2,
       rotation: [-0.3, 0.2, 0],
-      scale: 1.2,
     },
     {
-      scrollY: 2.5, // 2 viewports down
-      position: [-30, 0, 0],
+      scrollY: 2.5,
       rotation: [-0.3, 0.4, 0.1],
-      scale: 1.2,
     },
     {
-      scrollY: 4, // 2 viewports down
-      position: [0, 0, -70],
+      scrollY: 4,
       rotation: [0.02, 0, 0],
-      scale: 2.05,
     },
     {
-      scrollY: 4.4, // 2 viewports down
-      position: [0, 0, -70],
+      scrollY: 4.45,
       rotation: [0.02, 0, 0],
-      scale: 2.05,
     },
     {
-      scrollY: 4.5, // 2 viewports down
-      position: [0, 0, -100],
+      scrollY: 4.55,
       rotation: [0.02, 0, 0],
-      scale: 2.05,
     },
   ];
+
+  // Generate responsive keyframes based on screen width
+  const responsiveKeyframes = baseKeyframes.map((keyframe) => {
+    // Define min and max values for different properties
+    const configs = {
+      // First hero position
+      0: {
+        position: [
+          0, // x remains 0
+          responsiveValue(375, 1920, -15, 0, viewportWidth),
+          responsiveValue(375, 1920, 20, 62, viewportWidth), // z: reduced from 40 to 20 on mobile
+        ],
+        scale: responsiveValue(375, 1920, 0.3, 1.6, viewportWidth), // reduced from 1.0 to 0.6 on mobile, capped at 1.6 max
+      },
+      // Second hero position (same as first for this section)
+      0.05: {
+        position: [
+          0, // x remains 0
+          responsiveValue(375, 1920, -15, 0, viewportWidth),
+          responsiveValue(375, 1920, 35, 65, viewportWidth), // z: reduced from 40 to 20 on mobile
+        ],
+        scale: responsiveValue(375, 1920, 0.3, 1.6, viewportWidth), // reduced from 1.0 to 0.6 on mobile, capped at 1.6 max
+      },
+      // First about section - left side
+      1: {
+        position: [
+          responsiveValue(375, 1920, 20, 25, viewportWidth), // x: reduced from 15 to 10 on mobile
+          0,
+          0,
+        ],
+        scale: responsiveValue(375, 1920, 0.5, 1.0, viewportWidth), // reduced from 0.8 to 0.5 on mobile
+      },
+      // Continue first about section
+      1.7: {
+        position: [responsiveValue(375, 1920, 20, 25, viewportWidth), 0, 0],
+        scale: responsiveValue(375, 1920, 0.5, 0.9, viewportWidth), // reduced from 0.8 to 0.5 on mobile
+      },
+      // Second about section - right side
+      2: {
+        position: [
+          responsiveValue(375, 1920, -20, -25, viewportWidth), // x: reduced offset magnitude
+          0,
+          0,
+        ],
+        scale: responsiveValue(375, 1920, 0.5, 1.0, viewportWidth), // reduced from 0.8 to 0.5 on mobile
+      },
+      // Continue second about section
+      2.5: {
+        position: [responsiveValue(375, 1920, -20, -25, viewportWidth), 0, 0],
+        scale: responsiveValue(375, 1920, 0.45, 0.9, viewportWidth), // reduced from 0.7 to 0.45 on mobile
+      },
+      // Third section
+      4: {
+        position: [
+          0,
+          0,
+          responsiveValue(375, 1920, -20, -60, viewportWidth), // z: reduced depth for mobile
+        ],
+        scale: responsiveValue(375, 1920, 0.6, 1.6, viewportWidth), // reduced scale on both ends
+      },
+      // Continue third section
+      4.45: {
+        position: [0, 0, responsiveValue(375, 1920, -20, -60, viewportWidth)],
+        scale: responsiveValue(375, 1920, 0.6, 1.6, viewportWidth),
+      },
+      // Final position
+      4.55: {
+        position: [
+          0,
+          0,
+          responsiveValue(375, 1920, -30, -80, viewportWidth), // z: reduced depth for mobile
+        ],
+        scale: responsiveValue(375, 1920, 0.6, 1.6, viewportWidth),
+      },
+    };
+
+    // Apply responsive values for the current keyframe scroll position
+    return {
+      scrollY: keyframe.scrollY,
+      position: configs[keyframe.scrollY]?.position || [0, 0, 0],
+      rotation: keyframe.rotation,
+      scale: configs[keyframe.scrollY]?.scale || 1.0,
+    };
+  });
 
   return (
     <>
@@ -81,7 +171,10 @@ function Model({ modelPath }) {
         scale={1}
         position={[0, 0, 0]}
       />
-      <ScrollAnimationController target={modelRef} keyframes={keyframes} />
+      <ScrollAnimationController
+        target={modelRef}
+        keyframes={responsiveKeyframes}
+      />
     </>
   );
 }
@@ -98,20 +191,49 @@ function Loader() {
 // Main component that exports
 export default function ThreeScene({ modelPath = "/models/cv.glb" }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [viewportWidth, setViewportWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1920
+  ); // Default to desktop width
+
+  // Track screen width for responsive adjustments
+  useEffect(() => {
+    const updateScreenWidth = () => {
+      setViewportWidth(window.innerWidth);
+    };
+
+    // Set initial width
+    updateScreenWidth();
+
+    // Add resize listener
+    window.addEventListener("resize", updateScreenWidth);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", updateScreenWidth);
+  }, []);
+
+  // Create responsive camera properties - adjusted for more aggressive scaling
+  const cameraPosition = responsiveValue(375, 1920, 20, 50, viewportWidth); // Reduced from 35 to 20 for mobile
+  const cameraFov = responsiveValue(375, 1920, 80, 60, viewportWidth); // Increased FOV for mobile to show more
+
+  const cameraProps = {
+    position: [0, cameraPosition, 5],
+    fov: cameraFov,
+  };
 
   return (
     <>
       {isLoading && <Loader />}
-      <div className="fixed inset-0 z-10 pointer-events-none ">
+      <div className="fixed inset-0 z-10 pointer-events-none">
         <Canvas
-          camera={{ position: [0, 70, 5], fov: 60 }}
+          camera={cameraProps}
           onCreated={() => setIsLoading(false)}
+          style={{ pointerEvents: "none" }}
         >
           <ambientLight intensity={0.01} />
           <directionalLight position={[10, 10, 5]} intensity={0.01} />
 
           <Suspense fallback={null}>
-            <Model modelPath={modelPath} />
+            <Model modelPath={modelPath} viewportWidth={viewportWidth} />
             <Environment preset="city" />
           </Suspense>
 
