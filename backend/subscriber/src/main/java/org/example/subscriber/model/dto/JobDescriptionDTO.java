@@ -1,9 +1,6 @@
 package org.example.subscriber.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Builder;
-import lombok.extern.jackson.Jacksonized;
-
 import java.time.LocalDateTime;
 
 public class JobDescriptionDTO {
