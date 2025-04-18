@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -41,10 +42,12 @@ public class CVService {
             throw new IllegalArgumentException("File cannot be empty!");
         }
 
-        // doar pentru fisierele docx
+        // doar pentru fisierele docx si pdf
         String fileType = file.getContentType();
-        if (fileType == null || !fileType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
-            throw new IllegalArgumentException("Only DOCX files are supported! Provided type: " + fileType);
+        if (fileType == null ||
+                (!fileType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                        && !fileType.equals("application/pdf"))) {
+            throw new IllegalArgumentException("Only DOCX and PDF files are supported! Provided type: " + fileType);
         }
 
 

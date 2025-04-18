@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.print.attribute.standard.Media;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +120,7 @@ public class CVController {
 
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=\"" + cv.getName() + "\"")
-                    .contentType(org.springframework.http.MediaType.parseMediaType(cv.getType()))
+                    .contentType(MediaType.parseMediaType(cv.getType()))
                     .body(data);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

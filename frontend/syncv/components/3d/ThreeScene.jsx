@@ -122,6 +122,7 @@ function Model({ modelPath, viewportWidth, onLoaded }) {
     };
   });
 
+
   return (
     <>
       <primitive

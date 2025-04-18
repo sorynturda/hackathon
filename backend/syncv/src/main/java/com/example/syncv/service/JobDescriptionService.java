@@ -40,18 +40,20 @@ public class JobDescriptionService {
             throw new IllegalArgumentException("File cannot be empty!");
         }
 
-        // doar pentru fisierele docx
+        // doar pentru fisierele docx si pdf
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types // pentru pdf si alte tipuri
         String fileType = file.getContentType();
-        if (fileType == null || !fileType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
-            throw new IllegalArgumentException("Only DOCX files are supported! Provided type: " + fileType);
+        if (fileType == null ||
+                (!fileType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                        && !fileType.equals("application/pdf"))) {
+            throw new IllegalArgumentException("Only DOCX and PDF files are supported! Provided type: " + fileType);
         }
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userEmail));
 
         /// EDGE CASE: FILE MAY ALREADY EXIST ONLY IT IS UPLOADED BY THE SAME USER
-        if(jobDescriptionRepository.findByUserIdAndName(user.getId(), fileName).isPresent())
+        if (jobDescriptionRepository.findByUserIdAndName(user.getId(), fileName).isPresent())
             throw new IllegalArgumentException("File: " + fileName + " already exists!");
 
 
@@ -83,13 +85,13 @@ public class JobDescriptionService {
         return user.getJobDescriptions().stream().map(
                 jd ->
                         new JobDescriptionDTO(
-                                jd.getName(),
+                                jd.getId(),
+                                jd.getUser().getId(),
                                 jd.getUser().getName(),
+                                jd.getName(),
                                 jd.getSize(),
                                 jd.getType(),
-                                jd.getUploadedAt(),
-                                jd.getUser().getId(),
-                                jd.getId()
+                                jd.getUploadedAt()
                         )
         ).toList();
     }
