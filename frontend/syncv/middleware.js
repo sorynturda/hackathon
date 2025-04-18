@@ -37,6 +37,6 @@ export async function middleware(request) {
 export const config = {
   matcher: [
     // Apply to all paths except static files, images, api routes except auth ones
-    "/((?!_next/static|_next/image|favicon.ico|images|svgs|logo|api/(?!auth)).*)",
+   "/((?!_next/static|_next/image|favicon.ico|images|svgs|logo|models|api/(?!auth)).*)",
   ],
 };

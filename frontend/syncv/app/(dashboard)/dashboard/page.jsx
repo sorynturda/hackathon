@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useApiClient } from "../../lib/api";
+import { useAuth } from "../../../context/AuthContext";
+import { useApiClient } from "../../../lib/api";
 import { motion } from "framer-motion";
 
 const Dashboard = () => {
