@@ -1,7 +1,6 @@
 package org.example.subscriber.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.time.LocalDateTime;
 
 public class JobDescriptionDTO {
