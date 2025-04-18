@@ -125,7 +125,7 @@ public class JobDescriptionController {
 
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=\"" + jd.getName() + "\"")
-                    .contentType(org.springframework.http.MediaType.parseMediaType(jd.getType()))
+                    .contentType(MediaType.parseMediaType(jd.getType()))
                     .body(data);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
