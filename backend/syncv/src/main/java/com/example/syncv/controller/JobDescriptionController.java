@@ -1,5 +1,6 @@
 package com.example.syncv.controller;
 
+import com.example.syncv.model.dto.FileDTO;
 import com.example.syncv.model.dto.JobDescriptionDTO;
 import com.example.syncv.model.entity.JobDescription;
 import com.example.syncv.service.JobDescriptionService;
@@ -55,7 +56,9 @@ public class JobDescriptionController {
                     savedJD.getType(),
                     savedJD.getUploadedAt()
             );
-            messagePublisherService.publish(channel, jdDTO);
+            List<FileDTO> jds = new ArrayList<>();
+            jds.add(new FileDTO(jdDTO.getId(), "jds"));
+            messagePublisherService.publish(channel, jds);
             return ResponseEntity.status(HttpStatus.CREATED).body(jdDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -86,6 +89,10 @@ public class JobDescriptionController {
                 );
                 jdDTOs.add(jdDTO);
             }
+
+            List<FileDTO> jds = jdDTOs.stream().map(dto -> new FileDTO(dto.getId(), "jds")).toList();
+            messagePublisherService.publish(channel, jds);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(jdDTOs);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

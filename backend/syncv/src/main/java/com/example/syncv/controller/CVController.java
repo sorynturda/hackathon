@@ -1,9 +1,12 @@
 package com.example.syncv.controller;
 
 import com.example.syncv.model.dto.CVDTO;
+import com.example.syncv.model.dto.FileDTO;
 import com.example.syncv.model.entity.CV;
 import com.example.syncv.service.CVService;
+import com.example.syncv.service.MessagePublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +24,15 @@ import java.util.List;
 @RequestMapping("/api/cvs")
 public class CVController {
     private final CVService cvService;
+    private final MessagePublisherService messagePublisherService;
+
+    @Value("${redis.channel}")
+    private String channel;
 
     @Autowired
-    public CVController(CVService cvService) {
+    public CVController(CVService cvService, MessagePublisherService messagePublisherService) {
         this.cvService = cvService;
+        this.messagePublisherService = messagePublisherService;
     }
 
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -48,6 +56,9 @@ public class CVController {
                     savedCV.getType(),
                     savedCV.getUploadedAt()
             );
+            List<FileDTO> cvs = new ArrayList<>();
+            cvs.add(new FileDTO(cvDTO.getId(), "cvs"));
+            messagePublisherService.publish(channel, cvs);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDTO);
         } catch (IllegalArgumentException e) {
@@ -82,6 +93,11 @@ public class CVController {
                 );
                 cvDTOs.add(cvDTO);
             }
+
+            List<FileDTO> cvs = cvDTOs.stream().map(dto -> new FileDTO(dto.getId(), "cvs")).toList();
+            messagePublisherService.publish(channel, cvs);
+
+
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDTOs);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
