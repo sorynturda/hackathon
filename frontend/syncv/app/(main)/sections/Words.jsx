@@ -49,7 +49,7 @@ const RotatingText = () => {
   );
 
   return (
-    <div ref={containerRef} className="w-full h-[200vh] -mt-[30vh] relative">
+    <div ref={containerRef} className="w-full h-[200vh] -mt-[10vh] relative">
       <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden ">
         <div className="perspective-[1000px] transform-gpu relative flex flex-col items-center justify-center">
           <motion.div
