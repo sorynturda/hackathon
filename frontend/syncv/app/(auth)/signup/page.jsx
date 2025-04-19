@@ -45,13 +45,12 @@ const SignupPage = () => {
     setError("");
 
     try {
+      console.log("Form submission:", formData);
       await register(formData.username, formData.email, formData.password);
-      // Navigation is handled inside the register function
+      // Registration successful - redirect is handled in the register function
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "Registration failed. Please try again with different credentials."
-      );
+      console.error("Signup error:", err);
+      setError(err.message || "Registration failed. Please try again.");
     }
   };
 

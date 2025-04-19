@@ -1,12 +1,27 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Logo from "../common/Logo";
 import Button from "../common/Button";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isAboutHovered, setIsAboutHovered] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const pathname = usePathname();
+
+  // Check if we should hide the navbar on certain routes
+  useEffect(() => {
+    // Hide navbar on dashboard and related routes
+    const shouldHideNavbar = pathname.startsWith("/dashboard");
+    setIsVisible(!shouldHideNavbar);
+  }, [pathname]);
+
+  // Don't render anything if navbar should be hidden
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <div className="w-full px-4 sm:px-6 md:px-[20px] flex justify-between items-center h-[10vh] fixed z-[9999]">
