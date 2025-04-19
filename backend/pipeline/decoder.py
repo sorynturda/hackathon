@@ -49,7 +49,7 @@ Include ONLY information present in the CV. If a category has no relevant inform
 
 Return ONLY the JSON object. Do not include any introduction, explanations, backticks, code block markers, or additional text.\n"""
 
-client = genai.Client(api_key="AIzaSyCvdbsLw-GOzbq0SXhg5b0bAN06fsAA2h4")
+client = genai.Client(api_key="API")
 
 
 def get_text_pdf(filename):
