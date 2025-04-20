@@ -5,7 +5,7 @@ from google.genai import types
 from models.cv import CV
 from prompts import llm_cv_prompt, llm_jd_prompt
 
-client = genai.Client(api_key="AIzaSyCvdbsLw-GOzbq0SXhg5b0bAN06fsAA2h4")
+client = genai.Client(api_key="API")
 
 
 def get_text_pdf(filename):
