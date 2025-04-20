@@ -1,53 +1,18 @@
-import time
 import uvicorn
 from subscriber import RedisSubscriber
-from controller import app, last_messages
-from decoder import callGeminiForCV
-from pg_db import SessionLocal
-import json
-import io
+from controller import app
+from transform.decoder import callGemini  
 from models.cv import CV
-import ast
+from models.jd import JD
+from transform.transform import transform
+
+
 subscriber = None
 
-
-def read_large_object_from_oid(session, oid: int) -> bytes:
-    raw_conn = session.connection().connection
-    lo = raw_conn.lobject(oid, 'rb')
-    data = lo.read()
-    lo.close()
-    return data
-
 def message_callback(channel, data):
-    db = SessionLocal()
-    try:
-        print(f'Received message on channel {channel} : {data}')
-        messages = json.loads(data)
-
-        if not isinstance(messages, list):
-            print("Expected a list of objects")
-            return
-    
-        for item in messages:
-            item_type = item.get("type")
-            item_id = item.get("id")
-            if item_type == 'cvs' and item_id is not None:
-                cv = db.query(CV).filter(CV.id == item_id).first()
-                if cv:
-                    file_data = read_large_object_from_oid(db, cv.data)
-                    cv_doc = io.BytesIO(file_data)
-                    if cv.type.endswith('.document'):
-                        print(callGeminiForCV(cv_doc, 'docx'))
-                    elif cv.type.endswith('pdf'):
-                        model_response = callGeminiForCV(cv_doc,'pdf')
-                        print(model_response)
-                        dict_response = json.loads(model_response)
-                        print(dict_response['PROFESSIONAL_EXPERIENCE'][0]['company'])
-                        
-    except Exception as e:
-        print(e)
+    print(f'Received message on channel {channel} : {data}')
+    transform(data)
   
-
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup."""
