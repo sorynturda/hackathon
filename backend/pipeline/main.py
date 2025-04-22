@@ -5,21 +5,29 @@ from transform.decoder import callGemini
 from models.cv import CV
 from models.jd import JD
 from transform.transform import transform
-
+from load.load import load_cvs, load_jds
 
 subscriber = None
 
 def message_callback(channel, data):
     print(f'Received message on channel {channel} : {data}')
-    transform(data)
-  
+    transformed_data, load_collection = transform(data)
+    if load_collection == 'cvs':
+        load_cvs(transformed_data)
+    elif load_collection == 'jds':
+        load_jds(transformed_data)
+        
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup."""
     global subscriber
-    # Automatically connect to "your-channel" on startup
+    # Use the service name 'redis' as the host since we're in Docker
+    redis_host = 'redis'
+    redis_port = 6379
+    
+    # Automatically connect to channel
     channel_name = "canaljmeker"
-    subscriber = RedisSubscriber(host='localhost', port=5004, channel=channel_name)
+    subscriber = RedisSubscriber(host='localhost', port='5004', channel=channel_name)
     subscriber.set_callback(message_callback)
     subscriber.run_in_thread()
     print(f"Automatically subscribed to channel: {channel_name}")

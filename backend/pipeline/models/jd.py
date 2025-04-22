@@ -9,3 +9,4 @@ class JD(Base):
     data = Column(BigInteger, nullable=False)
     size = Column(BigInteger, nullable=False)
     type = Column(String, nullable=False)
+    user_id = Column(BigInteger, nullable=False)
