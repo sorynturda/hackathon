@@ -17,18 +17,18 @@ services:
     ports:
       - 5001:8080
     
-  backend-subscriber:
-    build:
-      context: ./backend/subscriber
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./backend/subscriber:/app
-      - maven-repo:/root/.m2
-    ports:
-      - 5002:8080
-    depends_on:
-      redis:
-        condition: service_started
+  # backend-subscriber:
+  #   build:
+  #     context: ./backend/subscriber
+  #     dockerfile: Dockerfile.dev
+  #   volumes:
+  #     - ./backend/subscriber:/app
+  #     - maven-repo:/root/.m2
+  #   ports:
+  #     - 5002:8080
+  #   depends_on:
+  #     redis:
+  #       condition: service_started
 
   database:
     image: postgres
