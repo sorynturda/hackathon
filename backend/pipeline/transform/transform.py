@@ -20,7 +20,7 @@ def read_large_object_from_oid(session, oid: int) -> bytes:
     lo.close()
     return data
 
-def get_mongo_cv_document(id, data, full_text):
+def get_mongo_cv_document(id, data, full_text, user_id):
     temp_doc = deepcopy(data)
     full_text_embedding = get_embedding(full_text.replace("\n", " "))
     try:
@@ -34,13 +34,14 @@ def get_mongo_cv_document(id, data, full_text):
         print(e)
     mongo_doc = {
         "_id": id,
+        "user_id": user_id,
         "full_text": full_text,
         "full_text_embedding": full_text_embedding,
         "extracted_info": temp_doc
     }
     return mongo_doc
 
-def get_mongo_jd_document(id, data, full_text):
+def get_mongo_jd_document(id, data, full_text, user_id):
     temp_doc = deepcopy(data)
     full_text_embedding = get_embedding(full_text.replace("\n", " "))
     try:
@@ -50,6 +51,7 @@ def get_mongo_jd_document(id, data, full_text):
         print(e)
     mongo_doc = {
         "_id" : id,
+        "user_id": user_id,
         "full_text" : full_text,
         "full_text_embedding" : full_text_embedding,
         "extracted_info" : temp_doc
@@ -57,7 +59,9 @@ def get_mongo_jd_document(id, data, full_text):
     return mongo_doc
 
 
-def transform(data): 
+def transform(data):
+    cv_final_docs = []
+    jd_final_docs = [] 
     db = SessionLocal()
     try:
         messages = json.loads(data)
@@ -74,21 +78,23 @@ def transform(data):
                     cv_doc = io.BytesIO(file_data)
                     if cv.type.endswith('.document'):
                         cv_dict = json.loads(callGemini(cv_doc, 'docx', 'CV'))
-                        print(get_mongo_cv_document(item_id, cv_dict, get_text_docx(cv_doc)))
+                        cv_final_docs.append(get_mongo_cv_document(item_id, cv_dict, get_text_docx(cv_doc), cv.user_id))
                     elif cv.type.endswith('pdf'):
                         cv_dict = json.loads(callGemini(cv_doc, 'pdf', 'CV'))
-                        print(get_mongo_cv_document(item_id, cv_dict, get_text_pdf(cv_doc)))
+                        cv_final_docs.append(get_mongo_cv_document(item_id, cv_dict, get_text_pdf(cv_doc), cv.user_id))
             elif item_type == 'jds' and item_id is not None: 
                 jd = db.query(JD).filter(JD.id == item_id).first()
                 if jd: 
                     file_data = read_large_object_from_oid(db, jd.data)
                     jd_doc = io.BytesIO(file_data)
                     if jd.type.endswith('.document'):
-                        jd_dict = callGemini(jd_doc, 'docx', 'JD')
-                        print(get_mongo_jd_document(item_id, jd_dict, get_text_docx(jd_doc)))
+                        jd_dict = json.loads(callGemini(jd_doc, 'docx', 'JD'))
+                        jd_final_docs.append(get_mongo_jd_document(item_id, jd_dict, get_text_docx(jd_doc), jd.user_id))
                     elif jd.type.endswith('pdf'):
-                        jd_dict = callGemini(jd_doc,'pdf','JD')
-                        print(get_mongo_jd_document(item_id, jd_dict, get_text_pdf(jd_doc)))
+                        jd_dict = json.loads(callGemini(jd_doc,'pdf','JD'))
+                        jd_final_docs.append(get_mongo_jd_document(item_id, jd_dict, get_text_pdf(jd_doc), jd.user_id))
     except Exception as e:
         print(e)
-        return []
+        return ([], 'null')
+    
+    return (cv_final_docs, 'cvs') if len(cv_final_docs)>0 else (jd_final_docs,'jds')
