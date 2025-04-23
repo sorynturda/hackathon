@@ -27,3 +27,4 @@ async-timeout==5.0.1
 asyncpg==0.30.0
 nest-asyncio==1.6.0
 sentence-transformers==4.0.2
+pymongo==4.12.0
