@@ -21,14 +21,26 @@ services:
   #   build:
   #     context: ./backend/pipeline
   #     dockerfile: Dockerfile
-  #   ports:
-  #     - 5002:8000
   #   depends_on:
   #     redis:
   #       condition: service_started
   #     database:
   #       condition: service_healthy
+  #   extra_hosts:  
+  #     - "host.docker.internal:host-gateway"
 
+  #   ports:
+  #     - 5002:8000
+
+  backend-ml-service:
+    build:
+      context: ./backend/ml_service
+      dockerfile: Dockerfile
+    extra_hosts:  
+      - "host.docker.internal:host-gateway"
+
+    ports:
+      - 5005:7999
         
 
   database:
