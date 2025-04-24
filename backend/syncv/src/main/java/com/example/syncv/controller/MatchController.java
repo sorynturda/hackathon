@@ -1,18 +1,15 @@
 package com.example.syncv.controller;
 
-import com.example.syncv.model.dto.CVDTO;
 import com.example.syncv.model.dto.InputDTO;
 import com.example.syncv.model.dto.MatchRequestDTO;
-import com.example.syncv.model.dto.MatchResponseDTO;
-import com.example.syncv.model.entity.CV;
+import com.example.syncv.model.dto.fe_service.JDResponse;
+import com.example.syncv.model.dto.ml_service.MatchResponseJDDTO;
 import com.example.syncv.service.CVService;
 import com.example.syncv.service.JobDescriptionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,7 +29,7 @@ public class MatchController {
         this.restTemplate = restTemplate;
     }
 
-    @GetMapping(path = "/cvs/{id}")
+    @PostMapping(path = "/cvs/{id}")
     public ResponseEntity<?> matchForCV(@PathVariable Long id, @RequestBody List<InputDTO> inputs) {
         try {
 
@@ -50,22 +47,31 @@ public class MatchController {
             HttpEntity<MatchRequestDTO> requestEntity = new HttpEntity<>(requestBody, headers);
 
             ObjectMapper mapper = new ObjectMapper();
-            System.out.println("Request JSON: " + mapper.writeValueAsString(requestBody));
+//            System.out.println("Request JSON: " + mapper.writeValueAsString(requestBody));
             ResponseEntity<?> res = restTemplate.exchange(
-                    "http://host.docker.internal:8080/api/test",
+                    "http://backend-ml-service:7999/api/find_match/cv",
                     HttpMethod.POST,
                     requestEntity,
-                    new ParameterizedTypeReference<List<MatchResponseDTO>>() {
+                    new ParameterizedTypeReference<List<MatchResponseJDDTO>>() {
                     }
             );
+            List<JDResponse> resToFE = new ArrayList<>();
+            for(MatchResponseJDDTO it : (ArrayList<MatchResponseJDDTO>) res.getBody()){
+                resToFE.add(new JDResponse(
+                        it.getJob_id(),
+                        requestBody.getUserId(),
+                        jobDescriptionService.getJobDescription(it.getJob_id()).getName(),
+                        it.getSimilarity_score()
+                ));
+            }
 
-            return ResponseEntity.ok(res.getBody());
+            return ResponseEntity.ok(resToFE);
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: " + e.getMessage());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
         }
     }
 
@@ -88,7 +94,7 @@ public class MatchController {
                     "http://host.docker.internal:8080/api/test2",
                     HttpMethod.POST,
                     requestEntity,
-                    new ParameterizedTypeReference<List<MatchResponseDTO>>() {
+                    new ParameterizedTypeReference<List<MatchResponseJDDTO>>() {
                     }
             );
 
