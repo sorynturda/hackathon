@@ -27,7 +27,7 @@ async def startup_event():
     
     # Automatically connect to channel
     channel_name = "canaljmeker"
-    subscriber = RedisSubscriber(host='localhost', port='5004', channel=channel_name)
+    subscriber = RedisSubscriber(host='redis', port=6379, channel=channel_name)
     subscriber.set_callback(message_callback)
     subscriber.run_in_thread()
     print(f"Automatically subscribed to channel: {channel_name}")

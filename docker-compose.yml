@@ -17,20 +17,19 @@ services:
     ports:
       - 5001:8080
     
-  # backend-fast-api-server:
-  #   build:
-  #     context: ./backend/pipeline
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     redis:
-  #       condition: service_started
-  #     database:
-  #       condition: service_healthy
-  #   extra_hosts:  
-  #     - "host.docker.internal:host-gateway"
-
-  #   ports:
-  #     - 5002:8000
+  backend-fast-api-server:
+    build:
+      context: ./backend/pipeline
+      dockerfile: Dockerfile
+    depends_on:
+      redis:
+        condition: service_started
+      database:
+        condition: service_healthy
+    volumes:
+      - ./backend/pipeline:/code
+    ports:
+      - 5002:8000
 
   backend-ml-service:
     build:
@@ -61,7 +60,12 @@ services:
         
   redis:
     image: redis:7.2-alpine
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
     ports:
       - 5004:6379
+    volumes:
+      - redis-data:/data
+
 volumes:
   maven-repo:
+  redis-data:

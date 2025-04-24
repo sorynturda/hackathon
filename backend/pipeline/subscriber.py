@@ -11,7 +11,7 @@ class RedisSubscriber:
         self.running = False
         self.thread = None
         self.message_callback = None
-        
+
     def set_callback(self, callback):
         self.message_callback = callback
         
@@ -21,20 +21,18 @@ class RedisSubscriber:
             try:
                 # Parse the JSON message
                 data = json.loads(message['data'])
-               # print(f"Received message on channel {self.channel}: {data}")
+                print(f"Received message on channel {self.channel}: {data}", flush=True)
                 # Call the callback function if set
                 if self.message_callback:
                     self.message_callback(self.channel, data)
             except json.JSONDecodeError:
-                print(f"Received non-JSON message: {message['data']}")
-                if self.message_callback:
-                    self.message_callback(self.channel, message['data'])
+                print(f"Received non-JSON message: {message['data']}", flush=True)
             except Exception as e:
                 print(f"Error processing message: {e}")
     
     def subscribe(self):
         self.pubsub.subscribe(**{self.channel: self.message_handler})
-        print(f"Subscribed to channel: {self.channel}")
+        print(f"Subscribed to channel: {self.channel}", flush=True)
         
     def start_listening(self):
         print(f"Listening for messages on channel '{self.channel}'...")
