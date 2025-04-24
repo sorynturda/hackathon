@@ -107,4 +107,9 @@ public class JobDescriptionService {
         jobDescriptionRepository.delete(jobDescription);
     }
 
+    public void deleteAll(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email:" + userEmail));
+        jobDescriptionRepository.deleteAllByUser_Id(user.getId());
+    }
 }

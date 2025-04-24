@@ -176,4 +176,21 @@ public class CVController {
         }
 
     }
+
+    @DeleteMapping()
+    public ResponseEntity<?> deleteAllCVs() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+            cvService.deleteAll(currentUserEmail);
+            return ResponseEntity.ok("All CVs are deleted successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete CV: " + e.getMessage());
+        }
+    }
+
 }

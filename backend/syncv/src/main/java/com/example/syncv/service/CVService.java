@@ -106,4 +106,12 @@ public class CVService {
             throw new RuntimeException("You are not authorized to delete this file");
         cvRepository.delete(cv);
     }
+
+    public void deleteAll(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email:" + userEmail));
+
+        cvRepository.deleteAllByUser_Id(user.getId());
+
+    }
 }

@@ -172,4 +172,22 @@ public class JobDescriptionController {
                     .body("Failed to delete job description: " + e.getMessage());
         }
     }
+
+    @DeleteMapping()
+    public ResponseEntity<?> deleteAllCVs() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+            jobDescriptionService.deleteAll(currentUserEmail);
+            return ResponseEntity.ok("All JDs are deleted successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete CV: " + e.getMessage());
+        }
+    }
+
+
 }
