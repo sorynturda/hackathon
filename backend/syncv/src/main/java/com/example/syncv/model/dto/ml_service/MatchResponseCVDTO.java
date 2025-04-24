@@ -1,5 +1,8 @@
 package com.example.syncv.model.dto.ml_service;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchResponseCVDTO {
     private Long resume_id;
     private Double similarity_score;
@@ -13,7 +16,7 @@ public class MatchResponseCVDTO {
         return similarity_score;
     }
 
-    public void setSimilarity_score(Double similarity_score) {
-        this.similarity_score = similarity_score;
+    public Long getResume_id() {
+        return resume_id;
     }
 }

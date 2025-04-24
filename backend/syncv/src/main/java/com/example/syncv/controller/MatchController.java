@@ -2,7 +2,9 @@ package com.example.syncv.controller;
 
 import com.example.syncv.model.dto.InputDTO;
 import com.example.syncv.model.dto.MatchRequestDTO;
+import com.example.syncv.model.dto.fe_service.CVResponse;
 import com.example.syncv.model.dto.fe_service.JDResponse;
+import com.example.syncv.model.dto.ml_service.MatchResponseCVDTO;
 import com.example.syncv.model.dto.ml_service.MatchResponseJDDTO;
 import com.example.syncv.service.CVService;
 import com.example.syncv.service.JobDescriptionService;
@@ -81,25 +83,33 @@ public class MatchController {
             // aici se face request de ep react pentru jd-uri
             // se returneaza lista de jd-uri (dto momentan)
             // se face request la API-ul de la serverul de fastAPI care returneaza un JSON cu scor si id
-            MatchRequestDTO requestBody = new MatchRequestDTO(id, jobDescriptionService.getJobDescription(id).getUser().getId(), 1, new ArrayList<>());
+            MatchRequestDTO requestBody = new MatchRequestDTO(id, jobDescriptionService.getJobDescription(id).getUser().getId(), 5, new ArrayList<>());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<MatchRequestDTO> requestEntity = new HttpEntity<>(requestBody, headers);
-
             ObjectMapper mapper = new ObjectMapper();
             System.out.println("Request JSON: " + mapper.writeValueAsString(requestBody));
             ResponseEntity<?> res = restTemplate.exchange(
-                    "http://host.docker.internal:8080/api/test2",
+                    "http://backend-ml-service:7999/api/find_match/jd",
                     HttpMethod.POST,
                     requestEntity,
-                    new ParameterizedTypeReference<List<MatchResponseJDDTO>>() {
+                    new ParameterizedTypeReference<List<MatchResponseCVDTO>>() {
                     }
             );
 
-            return ResponseEntity.ok(res.getBody());
-
+            List<MatchResponseCVDTO> resFromMLService = (ArrayList)res.getBody();
+            List<CVResponse> resToFE = resFromMLService.stream()
+                    .map(r ->
+                            new CVResponse(
+                                    r.getResume_id(),
+                                    requestBody.getUserId(),
+                                    cvService.getCV(r.getResume_id()).getName(),
+                                    r.getSimilarity_score()
+                            ))
+                    .toList();
+            return ResponseEntity.ok(resToFE);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         } catch (JsonProcessingException e) {
