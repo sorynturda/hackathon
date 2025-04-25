@@ -3,10 +3,12 @@ package com.example.syncv.model.dto;
 public class FileDTO {
     private Long id;
     private String type;
+    private boolean delete;
 
     public FileDTO(Long id, String type) {
         this.id = id;
         this.type = type;
+        this.delete=delete;
     }
 
     public Long getId() {
@@ -15,5 +17,9 @@ public class FileDTO {
 
     public String getType() {
         return type;
+    }
+
+    public boolean isDelete() {
+        return delete;
     }
 }

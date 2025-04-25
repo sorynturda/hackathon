@@ -1,29 +1,23 @@
 package com.example.syncv.model.dto.ml_service;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchResponseJDDTO {
-    private Long job_id;
-    private Double similarity_score;
+    private String candidate_name;
+    private List<JobDTO> jobs;
 
-    public MatchResponseJDDTO(Long job_id, Double similarity_score) {
-        this.job_id = job_id;
-        this.similarity_score = similarity_score;
+    public MatchResponseJDDTO(String candidate_name, List<JobDTO> jobs) {
+        this.candidate_name = candidate_name;
+        this.jobs = jobs;
     }
 
-    public Long getJob_id() {
-        return job_id;
+    public String getCandidate_name() {
+        return candidate_name;
     }
 
-    public Double getSimilarity_score() {
-        return similarity_score;
-    }
-
-    @Override
-    public String toString() {
-        return "MatchResponseDTO{" +
-                "id=" + job_id +
-                ", score=" + similarity_score +
-                '}';
+    public List<JobDTO> getJobs() {
+        return jobs;
     }
 }
