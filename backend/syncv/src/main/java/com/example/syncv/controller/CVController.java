@@ -57,7 +57,7 @@ public class CVController {
                     savedCV.getUploadedAt()
             );
             List<FileDTO> cvs = new ArrayList<>();
-            cvs.add(new FileDTO(cvDTO.getId(), "cvs"));
+            cvs.add(new FileDTO(cvDTO.getId(), "cvs", false));
             messagePublisherService.publish(channel, cvs);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(cvDTO);
@@ -94,7 +94,7 @@ public class CVController {
                 cvDTOs.add(cvDTO);
             }
 
-            List<FileDTO> cvs = cvDTOs.stream().map(dto -> new FileDTO(dto.getId(), "cvs")).toList();
+            List<FileDTO> cvs = cvDTOs.stream().map(dto -> new FileDTO(dto.getId(), "cvs", false)).toList();
             messagePublisherService.publish(channel, cvs);
 
 
@@ -167,6 +167,12 @@ public class CVController {
             String currentUserEmail = authentication.getName();
 
             cvService.deleteCV(id, currentUserEmail);
+
+            List<FileDTO> jds = new ArrayList<>();
+            jds.add(new FileDTO(id, "cvs", true));
+            messagePublisherService.publish(channel, jds);
+
+
             return ResponseEntity.ok("CV with id: " + id + " deleted successfully!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
@@ -183,7 +189,17 @@ public class CVController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = authentication.getName();
 
+            List<FileDTO> jds = cvService.getAllCVsByUser(currentUserEmail).stream()
+                    .map(cv ->
+                            new FileDTO(
+                                    cv.getId(),
+                                    "cvs",
+                                    true
+                            ))
+                    .toList();
+
             cvService.deleteAll(currentUserEmail);
+            messagePublisherService.publish(channel, jds);
             return ResponseEntity.ok("All CVs are deleted successfully!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());

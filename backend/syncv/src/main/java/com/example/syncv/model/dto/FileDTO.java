@@ -5,7 +5,7 @@ public class FileDTO {
     private String type;
     private boolean delete;
 
-    public FileDTO(Long id, String type) {
+    public FileDTO(Long id, String type, boolean delete) {
         this.id = id;
         this.type = type;
         this.delete=delete;
