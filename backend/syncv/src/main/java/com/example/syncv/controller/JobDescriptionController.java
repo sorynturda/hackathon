@@ -147,7 +147,6 @@ public class JobDescriptionController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = authentication.getName();
 
-            System.out.println("toate fisierele");
             List<JobDescriptionDTO> jdDTOs = jobDescriptionService.getAllJobDescriptionsByUser(currentUserEmail);
 
 

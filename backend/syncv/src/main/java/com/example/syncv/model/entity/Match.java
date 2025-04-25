@@ -28,20 +28,25 @@ public class Match {
     private Long userId;
     @Column(name = "user_email", nullable = false)
     private String userEmail;
+    @Column(name = "missing_skills", nullable = false)
+    private String missingSkills;
+    @Column(name = "matching_skills", nullable = false)
+    private String matchingSkills;
 
-    public Match(Long cvId, Long jdId, String candidateName, String position, Double score, LocalDate matchDate, Long userId, String userEmail) {
-        this.cvId = cvId;
-        this.jdId = jdId;
-        this.candidateName = candidateName;
-        this.position = position;
-        this.score = score;
-        this.matchDate = matchDate;
-        this.userId = userId;
-        this.userEmail = userEmail;
+    public String getMissingSkills() {
+        return missingSkills;
     }
 
-    public Match() {
+    public void setMissingSkills(String missingSkills) {
+        this.missingSkills = missingSkills;
+    }
 
+    public String getMatchingSkills() {
+        return matchingSkills;
+    }
+
+    public void setMatchingSkills(String matchingSkills) {
+        this.matchingSkills = matchingSkills;
     }
 
     public Long getId() {

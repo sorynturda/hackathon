@@ -1,17 +1,23 @@
 package com.example.syncv.controller;
 
 import com.example.syncv.model.dto.InputDTO;
+import com.example.syncv.model.dto.JobDescriptionDTO;
 import com.example.syncv.model.dto.MatchRequestDTO;
 import com.example.syncv.model.dto.fe_service.CVResponse;
 import com.example.syncv.model.dto.fe_service.JDResponse;
 import com.example.syncv.model.dto.ml_service.MatchResponseCVDTO;
 import com.example.syncv.model.dto.ml_service.MatchResponseJDDTO;
+import com.example.syncv.model.entity.CV;
+import com.example.syncv.model.entity.JobDescription;
 import com.example.syncv.service.CVService;
 import com.example.syncv.service.JobDescriptionService;
+import com.example.syncv.service.MatchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,15 +30,17 @@ public class MatchController {
     private final CVService cvService;
     private final JobDescriptionService jobDescriptionService;
     private final RestTemplate restTemplate;
+    private final MatchService matchService;
 
-    public MatchController(CVService cvService, JobDescriptionService jobDescriptionService, RestTemplate restTemplate) {
+    public MatchController(CVService cvService, JobDescriptionService jobDescriptionService, RestTemplate restTemplate, MatchService matchService) {
         this.cvService = cvService;
         this.jobDescriptionService = jobDescriptionService;
         this.restTemplate = restTemplate;
+        this.matchService = matchService;
     }
 
-    @PostMapping(path = "/cvs/{id}")
-    public ResponseEntity<?> matchForCV(@PathVariable Long id, @RequestBody List<InputDTO> inputs) {
+    @PostMapping(path = "/cvs/{cvId}")
+    public ResponseEntity<?> matchForCV(@PathVariable Long cvId, @RequestBody List<InputDTO> inputs) {
         try {
 
 //            Long userId = cvService.getCV(id).getUser().getId();
@@ -41,7 +49,8 @@ public class MatchController {
             // aici se face request de pe react pentru un cv
             // si se va returna un jd
             // se face un request la API-ul de la serverul de fastAPI care va returna un JSON cu id-ul jd si scor
-            MatchRequestDTO requestBody = new MatchRequestDTO(id, cvService.getCV(id).getUser().getId(), 5, inputs);
+            CV cv = cvService.getCV(cvId);
+            MatchRequestDTO requestBody = new MatchRequestDTO(cvId, cv.getUser().getId(), 1, inputs);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -54,20 +63,15 @@ public class MatchController {
                     "http://backend-ml-service:7999/api/find_match/cv",
                     HttpMethod.POST,
                     requestEntity,
-                    new ParameterizedTypeReference<List<MatchResponseJDDTO>>() {
+                    new ParameterizedTypeReference<MatchResponseJDDTO>() {
                     }
             );
-            List<JDResponse> resToFE = new ArrayList<>();
-            for(MatchResponseJDDTO it : (ArrayList<MatchResponseJDDTO>) res.getBody()){
-                resToFE.add(new JDResponse(
-                        it.getJob_id(),
-                        requestBody.getUserId(),
-                        jobDescriptionService.getJobDescription(it.getJob_id()).getName(),
-                        it.getSimilarity_score()
-                ));
-            }
-
-            return ResponseEntity.ok(resToFE);
+            matchService.storeMatchesJobs(
+                    cv.getUser().getId(),
+                    cvId,
+                    (MatchResponseJDDTO)res.getBody()
+                    );
+            return ResponseEntity.ok(null);
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -77,13 +81,14 @@ public class MatchController {
         }
     }
 
-    @GetMapping(path = "/jds/{id}")
-    public ResponseEntity<?> matchForJD(@PathVariable Long id) {
+    @GetMapping(path = "/jds/{jdId}")
+    public ResponseEntity<?> matchForJD(@PathVariable Long jdId) {
         try {
             // aici se face request de ep react pentru jd-uri
             // se returneaza lista de jd-uri (dto momentan)
             // se face request la API-ul de la serverul de fastAPI care returneaza un JSON cu scor si id
-            MatchRequestDTO requestBody = new MatchRequestDTO(id, jobDescriptionService.getJobDescription(id).getUser().getId(), 5, new ArrayList<>());
+            JobDescription jd = jobDescriptionService.getJobDescription(jdId);
+            MatchRequestDTO requestBody = new MatchRequestDTO(jdId, jd.getUser().getId(), 5, new ArrayList<>());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -95,21 +100,11 @@ public class MatchController {
                     "http://backend-ml-service:7999/api/find_match/jd",
                     HttpMethod.POST,
                     requestEntity,
-                    new ParameterizedTypeReference<List<MatchResponseCVDTO>>() {
+                    new ParameterizedTypeReference<MatchResponseCVDTO>() {
                     }
             );
-
-            List<MatchResponseCVDTO> resFromMLService = (ArrayList)res.getBody();
-            List<CVResponse> resToFE = resFromMLService.stream()
-                    .map(r ->
-                            new CVResponse(
-                                    r.getResume_id(),
-                                    requestBody.getUserId(),
-                                    cvService.getCV(r.getResume_id()).getName(),
-                                    r.getSimilarity_score()
-                            ))
-                    .toList();
-            return ResponseEntity.ok(resToFE);
+            matchService.storeMatchesCandidates(jd.getUser().getId(), jdId, (MatchResponseCVDTO) res.getBody());
+            return ResponseEntity.ok(null);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         } catch (JsonProcessingException e) {
