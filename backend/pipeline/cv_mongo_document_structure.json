@@ -1,0 +1,108 @@
+{
+    "_id": 58,
+    "user_id" : 12,
+    "full_text": "Mihnea-Daniel Bostina\nStudent at Technical University of Cluj-Napoca\nmihneabostina5@gmail.com\n \n+40732514653\n \nCluj Napoca, Romania\n \ngithub.com/Cocolino21\n \nProfile\nEnthusiastic and ambitious student enrolled at Technical University of Cluj-Napoca, possessing a keen aptitude for \ncontinuous learning and skill refinement.\nProfessional Experience\nAlfa Software, Intern\nAlfa Software is a Romanian software house that produces and maintains an ERP (enterprise \nresource planning) system. \n07/2024 – 08/2024\nCluj-Napoca\nAchievements/Tasks:\n•SQL Development: Engaging in backend development, designing and optimizing \ndatabase structures, queries, and performance to support application functionality and data \nintegrity.\n•Power BI Reporting: Creating reports and dashboards by transforming company data \ninto meaningful insights. \n•Translating business requirements into tailored solutions that align with customer \nobjectives, preferences, and business processes.\nEducation\nBachelor's in Computer Engineering, Technical University of Cluj-Napoca 2022 – present\nHigh School, Colegiul National \"Mihai Eminescu\" Petrosani 2018 – 2022\nSkills\nTechnical skills:\n•Python, Pandas, Numpy, TensorFlow, ETL, SQL, \nNoSQL, Java, Spring Boot, Docker, REST APIs, \nC/C++,  HTML/CSS, Linux OS, Bash, Git, Power BI, \nObject Oriented Programming, Algorithms and Data \nstructures, Functional Programming\nSoft skills:\nCommunication, Teamwork, Problem-Solving, \nAdaptability, Critical thinking, Creativity\nProjects\nFull stack music web application - Java Spring and PostgreSQL for backend implementation. [Github]\nThe project is a music web application designed to replicate the functionality of a service like Spotify. Users can follow \nand recommend each other music. The application supports CRUD operations for users, albums, reviews, and posts.\n•Technologies: Java ( Spring ), Javascript ( React ), HTML, CSS, JPA (Hibernate), Spring Security, SQL ( PostgreSQL )\nDesktop application - Polynomial Expression Analyzer [Gitlab]\nJava application for an easier way of performing mathematical operations such as addition, subtraction, division, \nintegration and differentiation on a user-given polynomial which is parsed using regular expressions. \n•Technologies: Java, Java Swing ( GUI )\nLanguages\nRomanian, English\n",
+    "full_text_embedding": ["example","array","768","values"], 
+    "extracted_info": {
+        "NAME": "Mihnea-Daniel Bostina",
+        "TECHNICAL_SKILLS": [
+            "Python",
+            "Pandas",
+            "Numpy",
+            "TensorFlow",
+            "ETL",
+            "SQL",
+            "NoSQL",
+            "Java",
+            "Spring Boot",
+            "Docker",
+            "REST APIs",
+            "C/C++",
+            "HTML/CSS",
+            "Linux OS",
+            "Bash",
+            "Git",
+            "Power BI",
+            "Object Oriented Programming",
+            "Algorithms and Data structures",
+            "Functional Programming"
+        ],
+        "SOFT_SKILLS": [
+            "Communication",
+            "Teamwork",
+            "Problem-Solving",
+            "Adaptability",
+            "Critical thinking",
+            "Creativity"
+        ],
+        "DOMAIN_KNOWLEDGE": [],
+        "PROFESSIONAL_EXPERIENCE": [
+            {
+                "company": "Alfa Software",
+                "role": "Intern",
+                "period": [
+                    "07/2024",
+                    "08/2024"
+                ],
+                "responsibilities": "•SQL Development: Engaging in backend development, designing and optimizing \ndatabase structures, queries, and performance to support application functionality and data \nintegrity.\n•Power BI Reporting: Creating reports and dashboards by transforming company data \ninto meaningful insights. \n•Translating business requirements into tailored solutions that align with customer \nobjectives, preferences, and business processes.",
+                "professional_experience_embedding": ["example","array","768","values"]
+            }
+        ],
+        "PROJECT_EXPERIENCE": [
+            {
+                "name": "Full stack music web application",
+                "technologies": [
+                    "Java ( Spring )",
+                    "Javascript ( React )",
+                    "HTML",
+                    "CSS",
+                    "JPA (Hibernate)",
+                    "Spring Security",
+                    "SQL ( PostgreSQL )"
+                ],
+                "description": "The project is a music web application designed to replicate the functionality of a service like Spotify. Users can follow \nand recommend each other music. The application supports CRUD operations for users, albums, reviews, and posts.",
+                "outcome": "[Github]",
+                "project_experience_embedding": ["example","array","768","values"]
+            },
+            {
+                "name": "Desktop application - Polynomial Expression Analyzer",
+                "technologies": [
+                    "Java",
+                    "Java Swing ( GUI )"
+                ],
+                "description": "Java application for an easier way of performing mathematical operations such as addition, subtraction, division, \nintegration and differentiation on a user-given polynomial which is parsed using regular expressions.",
+                "outcome": "[Gitlab]",
+                "project_experience_embedding": ["example","array","768","values"]
+            }
+        ],
+        "CERTIFICATIONS": [],
+        "EDUCATION": [
+            {
+                "degree": "Bachelor's in Computer Engineering",
+                "institution": "Technical University of Cluj-Napoca",
+                "period": [
+                    "2022",
+                    "Present"
+                ]
+            },
+            {
+                "degree": "High School",
+                "institution": "Colegiul National \"Mihai Eminescu\" Petrosani",
+                "period": [
+                    "2018",
+                    "2022"
+                ]
+            }
+        ],
+        "LANGUAGES": [
+            {
+                "language": "Romanian",
+                "proficiency": null
+            },
+            {
+                "language": "English",
+                "proficiency": null
+            }
+        ]
+    }
+}

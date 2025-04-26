@@ -1,0 +1,12 @@
+from sqlalchemy import BigInteger, Column, String, LargeBinary, Integer
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class JD(Base):
+    __tablename__ = 'jds'
+    id = Column(Integer, primary_key=True, index=True)
+    data = Column(BigInteger, nullable=False)
+    size = Column(BigInteger, nullable=False)
+    type = Column(String, nullable=False)
+    user_id = Column(BigInteger, nullable=False)

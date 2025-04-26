@@ -1,0 +1,60 @@
+{
+    "_id": 58,
+    "user_id" : 12,
+    "full_text": "Job Title:\nMid-level SAP Developer\nCompany Overview:\nInnovateTech Solutions is a leading global provider of IT services and solutions, dedicated to delivering cutting-edge technology and innovation to our clients. We specialize in creating tailored solutions that drive business success and enhance operational efficiency. Our dynamic team of professionals is committed to excellence and continuous improvement, fostering a collaborative and inclusive work environment.\nKey Responsibilities:\n- Develop, customize, and enhance SAP applications to meet business requirements and improve system functionality.\n- Collaborate with cross-functional teams to gather and analyze business requirements, translating them into technical specifications.\n- Perform system configuration, testing, and troubleshooting to ensure seamless integration and optimal performance of SAP modules.\n- Provide technical support and guidance to end-users, addressing and resolving issues in a timely manner.\n- Participate in project planning and execution, contributing to the successful delivery of SAP projects within scope, time, and budget.\n- Maintain comprehensive documentation of system configurations, modifications, and user guides.\n- Stay updated with the latest SAP technologies and industry trends, recommending improvements and innovations.\nRequired Qualifications:\n- Bachelor’s degree in Computer Science, Information Technology, or a related field.\n- Minimum of 3-5 years of experience in SAP development and implementation.\n- Proficiency in SAP ABAP programming language and related technologies.\n- Strong understanding of SAP modules such as FI/CO, MM, SD, or HR.\n- Experience with SAP integration technologies and tools.\n- Excellent problem-solving skills and attention to detail.\n- Strong communication and interpersonal skills, with the ability to work effectively in a team environment.\nPreferred Skills:\n- Experience with SAP S/4HANA and Fiori applications.\n- Knowledge of SAP Cloud Platform and SAP HANA.\n- Familiarity with Agile methodologies and DevOps practices.\n- Certification in SAP development or related areas.\nBenefits:\n- Competitive salary and performance-based bonuses.\n- Comprehensive health, dental, and vision insurance plans.\n- Retirement savings plan with company matching contributions.\n- Opportunities for professional development and career advancement.\n- Flexible work arrangements and a supportive work-life balance.\n- Access to cutting-edge technology and tools.\n- Inclusive and diverse workplace culture.",
+    "full_text_embedding": ["example","array","768","values"], 
+    "extracted_info": {
+        "JOB_TITLE": "Mid-level SAP Developer",
+        "KEY_RESPONSIBILITIES": [
+            "Develop, customize, and enhance SAP applications to meet business requirements and improve system functionality.",
+            "Collaborate with cross-functional teams to gather and analyze business requirements, translating them into technical specifications.",
+            "Perform system configuration, testing, and troubleshooting to ensure seamless integration and optimal performance of SAP modules.",
+            "Provide technical support and guidance to end-users, addressing and resolving issues in a timely manner.",
+            "Participate in project planning and execution, contributing to the successful delivery of SAP projects within scope, time, and budget.",
+            "Maintain comprehensive documentation of system configurations, modifications, and user guides.",
+            "Stay updated with the latest SAP technologies and industry trends, recommending improvements and innovations."
+        ],
+        "KEY_RESPONSIBILITIES_EMBEDDING": ["example","array","768","values"],
+        "REQUIRED_QUALIFICATIONS": {
+            "MINIMUM_EXPERIENCE": {
+                "years": [
+                    "3",
+                    "5"
+                ],
+                "industry": "",
+                "description": "Minimum of 3-5 years of experience in SAP development and implementation."
+            },
+            "EDUCATION": "Bachelor’s degree in Computer Science, Information Technology, or a related field.",
+            "TECHNICAL_SKILLS": [
+                "SAP ABAP programming language",
+                "SAP modules (FI/CO, MM, SD, or HR)",
+                "SAP integration technologies",
+                "SAP",
+                "system configuration",
+                "testing",
+                "troubleshooting"
+            ],
+            "SOFT_SKILLS": [
+                "problem-solving skills",
+                "attention to detail",
+                "communication skills",
+                "interpersonal skills",
+                "ability to work effectively in a team environment"
+            ],
+            "LANGUAGES": []
+        },
+        "OPTIONAL_SKILLS": {
+            "TECHNICAL_SKILLS": [
+                "SAP S/4HANA",
+                "Fiori applications",
+                "SAP Cloud Platform",
+                "SAP HANA",
+                "Agile methodologies",
+                "DevOps practices",
+                "SAP development certification"
+            ],
+            "SOFT_SKILLS": [],
+            "LANGUAGES": []
+        }
+    }
+}

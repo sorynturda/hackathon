@@ -1,5 +1,6 @@
 package com.example.syncv.controller;
 
+import com.example.syncv.model.dto.FileDTO;
 import com.example.syncv.model.dto.JobDescriptionDTO;
 import com.example.syncv.model.entity.JobDescription;
 import com.example.syncv.service.JobDescriptionService;
@@ -14,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +57,9 @@ public class JobDescriptionController {
                     savedJD.getType(),
                     savedJD.getUploadedAt()
             );
-            messagePublisherService.publish(channel, jdDTO);
+            List<FileDTO> jds = new ArrayList<>();
+            jds.add(new FileDTO(jdDTO.getId(), "jds", false));
+            messagePublisherService.publish(channel, jds);
             return ResponseEntity.status(HttpStatus.CREATED).body(jdDTO);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -86,12 +90,16 @@ public class JobDescriptionController {
                 );
                 jdDTOs.add(jdDTO);
             }
+
+            List<FileDTO> jds = jdDTOs.stream().map(dto -> new FileDTO(dto.getId(), "jds", false)).toList();
+            messagePublisherService.publish(channel, jds);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(jdDTOs);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload job description: " + e.getMessage());
+                    .body("Failed to upload job descriptions: " + e.getMessage());
         }
 
     }
@@ -139,7 +147,6 @@ public class JobDescriptionController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = authentication.getName();
 
-            System.out.println("toate fisierele");
             List<JobDescriptionDTO> jdDTOs = jobDescriptionService.getAllJobDescriptionsByUser(currentUserEmail);
 
 
@@ -157,6 +164,11 @@ public class JobDescriptionController {
             String currentUserEmail = authentication.getName();
 
             jobDescriptionService.deleteJobDescription(id, currentUserEmail);
+
+            List<FileDTO> jds = new ArrayList<>();
+            jds.add(new FileDTO(id, "jds", true));
+            messagePublisherService.publish(channel, jds);
+
             return ResponseEntity.ok("Job description with id: " + id + " deleted successfully!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
@@ -165,4 +177,32 @@ public class JobDescriptionController {
                     .body("Failed to delete job description: " + e.getMessage());
         }
     }
+
+    @DeleteMapping()
+    public ResponseEntity<?> deleteAllCVs() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+
+            List<FileDTO> jds = jobDescriptionService.getAllJobDescriptionsByUser(currentUserEmail).stream()
+                    .map(jd ->
+                            new FileDTO(
+                                    jd.getId(),
+                                    "jds",
+                                    true
+                            ))
+                    .toList();
+            jobDescriptionService.deleteAll(currentUserEmail);
+            messagePublisherService.publish(channel, jds);
+            return ResponseEntity.ok("All job descriptions are deleted successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete jds: " + e.getMessage());
+        }
+    }
+
+
 }
