@@ -1,7 +1,0 @@
-package com.example.syncv.model.dto.fe_service;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-public record JDResponse(Long id, Long userId, String jdName, Double score) {
-}

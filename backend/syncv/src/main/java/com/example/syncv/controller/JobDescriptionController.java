@@ -99,7 +99,7 @@ public class JobDescriptionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload job description: " + e.getMessage());
+                    .body("Failed to upload job descriptions: " + e.getMessage());
         }
 
     }
@@ -195,12 +195,12 @@ public class JobDescriptionController {
                     .toList();
             jobDescriptionService.deleteAll(currentUserEmail);
             messagePublisherService.publish(channel, jds);
-            return ResponseEntity.ok("All CVs are deleted successfully!");
+            return ResponseEntity.ok("All job descriptions are deleted successfully!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to delete CV: " + e.getMessage());
+                    .body("Failed to delete jds: " + e.getMessage());
         }
     }
 

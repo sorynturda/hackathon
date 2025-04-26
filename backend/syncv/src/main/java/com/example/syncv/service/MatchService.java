@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class MatchService {
@@ -72,8 +74,17 @@ public class MatchService {
     }
 
     public MatchDTO getMatch(Long id) {
-        Match match = matchRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Match with id: " + id + " not found!"));
+        Match match = matchRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Match with id: " + id + " not found!"));
+
+        String[] missingSkills = Arrays.stream(match.getMissingSkills().split(" "))
+                .map(skill -> skill.replace("_", " "))
+                .toArray(String[]::new);
+
+        String[] matchingSkills = Arrays.stream(match.getMatchingSkills().split(" "))
+                .map(skill -> skill.replace("_", " "))
+                .toArray(String[]::new);
+
         return new MatchDTO(
                 match.getId(),
                 match.getCvId(),
@@ -84,29 +95,41 @@ public class MatchService {
                 match.getMatchDate(),
                 match.getUserId(),
                 match.getUserEmail(),
-                match.getMissingSkills().split(" "),
-                match.getMatchingSkills().split(" "),
+                missingSkills,
+                matchingSkills,
                 match.getReasoning()
         );
     }
 
     public List<MatchDTO> getAllMatchesByUser(String userEmail) {
-        return matchRepository.findByUserEmail(userEmail).stream()
-                .map(m ->
-                        new MatchDTO(
-                                m.getId(),
-                                m.getCvId(),
-                                m.getJdId(),
-                                m.getCandidateName(),
-                                m.getPosition(),
-                                m.getScore(),
-                                m.getMatchDate(),
-                                m.getUserId(),
-                                m.getUserEmail(),
-                                m.getMissingSkills().split(" "),
-                                m.getMatchingSkills().split(" "),
-                                m.getReasoning()
-                        )).toList();
+        List<MatchDTO> matches = matchRepository.findByUserEmail(userEmail).stream()
+                .map(m -> {
+                    String[] missingSkills = Arrays.stream(m.getMissingSkills().split(" "))
+                            .map(skill -> skill.replace("_", " "))
+                            .toArray(String[]::new);
+
+                    String[] matchingSkills = Arrays.stream(m.getMatchingSkills().split(" "))
+                            .map(skill -> skill.replace("_", " "))
+                            .toArray(String[]::new);
+
+                    return new MatchDTO(
+                            m.getId(),
+                            m.getCvId(),
+                            m.getJdId(),
+                            m.getCandidateName(),
+                            m.getPosition(),
+                            m.getScore(),
+                            m.getMatchDate(),
+                            m.getUserId(),
+                            m.getUserEmail(),
+                            missingSkills,
+                            matchingSkills,
+                            m.getReasoning()
+                    );
+                })
+                .toList();
+
+        return matches;
     }
 
     @Transactional

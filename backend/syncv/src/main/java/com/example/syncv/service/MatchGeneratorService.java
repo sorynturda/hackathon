@@ -70,8 +70,8 @@ public class MatchGeneratorService {
 
         // Sample skill sets
         String[][] matchingSkillSets = {
-            {"Java", "Spring Boot", "REST API", "SQL"},
-            {"Python", "Data Analysis", "Machine Learning", "TensorFlow"},
+            {"Java", "Spring Boot", "REST_API", "SQL"},
+            {"Python", "Data_Analysis", "Machine_Learning", "TensorFlow"},
             {"JavaScript", "React", "Node.js", "MongoDB"},
             {"C#", ".NET", "Azure", "SQL Server"},
             {"DevOps", "Docker", "Kubernetes", "AWS"}
@@ -79,9 +79,9 @@ public class MatchGeneratorService {
 
         String[][] missingSkillSets = {
             {"Kafka", "Microservices", "GraphQL"},
-            {"PyTorch", "Computer Vision", "NLP"},
+            {"PyTorch", "Computer_Vision", "NLP"},
             {"Angular", "Vue.js", "TypeScript"},
-            {"Entity Framework", "Blazor", "Azure Functions"},
+            {"Entity_Framework_Bossman", "Blazor", "Azure_Functions"},
             {"Terraform", "Jenkins", "Ansible"}
         };
 

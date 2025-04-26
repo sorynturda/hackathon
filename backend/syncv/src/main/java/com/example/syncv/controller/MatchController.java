@@ -1,20 +1,15 @@
 package com.example.syncv.controller;
 
 import com.example.syncv.model.dto.InputDTO;
-import com.example.syncv.model.dto.JobDescriptionDTO;
 import com.example.syncv.model.dto.MatchDTO;
 import com.example.syncv.model.dto.MatchRequestDTO;
-import com.example.syncv.model.dto.fe_service.CVResponse;
-import com.example.syncv.model.dto.fe_service.JDResponse;
 import com.example.syncv.model.dto.ml_service.MatchResponseCVDTO;
 import com.example.syncv.model.dto.ml_service.MatchResponseJDDTO;
 import com.example.syncv.model.entity.CV;
 import com.example.syncv.model.entity.JobDescription;
-import com.example.syncv.model.entity.Match;
 import com.example.syncv.service.CVService;
 import com.example.syncv.service.JobDescriptionService;
 import com.example.syncv.service.MatchService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -44,17 +39,10 @@ public class MatchController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getMatch(@PathVariable Long id) {
         try {
-            // Get authenticated user
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String currentUserEmail = authentication.getName();
-
             MatchDTO match = matchService.getMatch(id);
-
-
             return ResponseEntity.ok(match);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to retrieve job matches: " + e.getMessage());
+            return ResponseEntity.notFound().build();
         }
 
     }
@@ -71,8 +59,7 @@ public class MatchController {
 
             return ResponseEntity.ok(matches);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to retrieve job matches: " + e.getMessage());
+            return ResponseEntity.notFound().build();
         }
 
     }
@@ -81,14 +68,17 @@ public class MatchController {
     public ResponseEntity<?> matchForCV(@PathVariable Long cvId, @RequestBody List<InputDTO> inputs) {
         try {
 
-//            Long userId = cvService.getCV(id).getUser().getId();
-//            MatchRequestDTO req = new MatchRequestDTO(id, userId, 1, inputs);
+            double sum = 0;
+            for (InputDTO input : inputs)
+                sum += input.getWeight();
+            if (Math.abs(sum - 1.0) > 1e-9)
+                throw new NumberFormatException("Sum of weights must be equal to 1");
 
             // aici se face request de pe react pentru un cv
             // si se va returna un jd
             // se face un request la API-ul de la serverul de fastAPI care va returna un JSON cu id-ul jd si scor
             CV cv = cvService.getCV(cvId);
-            MatchRequestDTO requestBody = new MatchRequestDTO(cvId, cv.getUser().getId(), 1, inputs);
+            MatchRequestDTO requestBody = new MatchRequestDTO(cvId, cv.getUser().getId(), 1, inputs.stream().map(i -> new InputDTO(i.getSkill().trim(), i.getWeight())).toList());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -109,9 +99,12 @@ public class MatchController {
                     cvId,
                     (MatchResponseJDDTO) res.getBody()
             );
-            return ResponseEntity.ok(null);
+
+
+            return ResponseEntity.ok("Match done for cv with id: " + cvId);
+        } catch (NumberFormatException ne) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ne.getMessage());
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: " + e.getMessage());
 //        } catch (JsonProcessingException e) {
@@ -119,7 +112,7 @@ public class MatchController {
         }
     }
 
-    @GetMapping(path = "/jds/{jdId}")
+    @PostMapping(path = "/jds/{jdId}")
     public ResponseEntity<?> matchForJD(@PathVariable Long jdId) {
         try {
             // aici se face request de ep react pentru jd-uri
@@ -132,8 +125,6 @@ public class MatchController {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<MatchRequestDTO> requestEntity = new HttpEntity<>(requestBody, headers);
-            ObjectMapper mapper = new ObjectMapper();
-            System.out.println("Request JSON: " + mapper.writeValueAsString(requestBody));
             ResponseEntity<?> res = restTemplate.exchange(
                     "http://backend-ml-service:7999/api/find_match/jd",
                     HttpMethod.POST,
@@ -142,11 +133,10 @@ public class MatchController {
                     }
             );
             matchService.storeMatchesCandidates(jd.getUser().getId(), jdId, (MatchResponseCVDTO) res.getBody());
-            return ResponseEntity.ok(null);
+
+            return ResponseEntity.ok("Match done for jd with id: " + jdId);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         }
     }
 

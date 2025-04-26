@@ -103,7 +103,7 @@ public class CVController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload CV: " + e.getMessage());
+                    .body("Failed to upload CVs: " + e.getMessage());
         }
     }
 
@@ -205,7 +205,7 @@ public class CVController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to delete CV: " + e.getMessage());
+                    .body("Failed to delete CVs: " + e.getMessage());
         }
     }
 
