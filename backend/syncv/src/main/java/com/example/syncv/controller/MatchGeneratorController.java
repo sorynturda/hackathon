@@ -44,7 +44,8 @@ public class MatchGeneratorController {
                             m.getUserId(),
                             m.getUserEmail(),
                             m.getMissingSkills().split(" "),
-                            m.getMatchingSkills().split(" ")
+                            m.getMatchingSkills().split(" "),
+                            m.getReasoning()
                     ))
                     .collect(Collectors.toList());
 
