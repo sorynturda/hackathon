@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "matches")
@@ -23,7 +24,7 @@ public class Match {
     private Double score;
     @CreationTimestamp
     @Column(name = "match_date", nullable = false)
-    private LocalDate matchDate;
+    private LocalDateTime matchDate;
     @Column(name = "user_id", nullable = false)
     private Long userId;
     @Column(name = "user_email", nullable = false)
@@ -32,6 +33,20 @@ public class Match {
     private String missingSkills;
     @Column(name = "matching_skills", nullable = false)
     private String matchingSkills;
+    @Column(name= "reasoning", nullable = false)
+    private String reasoning;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getReasoning() {
+        return reasoning;
+    }
+
+    public void setReasoning(String reasoning) {
+        this.reasoning = reasoning;
+    }
 
     public String getMissingSkills() {
         return missingSkills;
@@ -93,11 +108,11 @@ public class Match {
         this.score = score;
     }
 
-    public LocalDate getMatchDate() {
+    public LocalDateTime getMatchDate() {
         return matchDate;
     }
 
-    public void setMatchDate(LocalDate matchDate) {
+    public void setMatchDate(LocalDateTime matchDate) {
         this.matchDate = matchDate;
     }
 

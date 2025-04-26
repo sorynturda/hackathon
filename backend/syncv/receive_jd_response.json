@@ -1,0 +1,21 @@
+[
+  {
+    "id": 76,
+    "userId": 2,
+    "limit": 5,
+    "inputs": []
+  },
+  {
+    "job_position": "backend",
+    "candidates": [
+      {
+        "cv_id": 18,
+        "candidate_name": "sorin",
+        "overall_match": 8.26,
+        "missing_skills_req": [],
+        "matching_skills_req": [],
+        "reasoning": "sorin"
+      }
+    ]
+  }
+]

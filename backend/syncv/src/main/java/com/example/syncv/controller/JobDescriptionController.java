@@ -195,7 +195,7 @@ public class JobDescriptionController {
                     .toList();
             jobDescriptionService.deleteAll(currentUserEmail);
             messagePublisherService.publish(channel, jds);
-            return ResponseEntity.ok("All JDs are deleted successfully!");
+            return ResponseEntity.ok("All CVs are deleted successfully!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {

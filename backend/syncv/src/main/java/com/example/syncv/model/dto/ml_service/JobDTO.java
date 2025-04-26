@@ -9,13 +9,18 @@ public class JobDTO {
     private Double overall_match;
     private String[] missing_skills_req;
     private String[] matching_skills_req;
-
-    public JobDTO(Long job_id, String job_position, Double overall_match, String[] missing_skills_req, String[] matching_skills_req) {
+    private String reasoning;
+    public JobDTO(Long job_id, String job_position, Double overall_match, String[] missing_skills_req, String[] matching_skills_req, String reasoning) {
         this.job_id = job_id;
         this.job_position = job_position;
         this.overall_match = overall_match;
         this.missing_skills_req = missing_skills_req;
         this.matching_skills_req = matching_skills_req;
+        this.reasoning = reasoning;
+    }
+
+    public String getReasoning() {
+        return reasoning;
     }
 
     public Long getJob_id() {

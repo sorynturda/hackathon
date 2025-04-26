@@ -1,0 +1,25 @@
+[
+  {
+    "id": 76,
+    "userId": 2,
+    "limit": 2,
+    "inputs": [
+      {
+        "skill": "weight"
+      }
+    ]
+  },
+  {
+    "candidate_name": "sorin",
+    "jobs": [
+      {
+        "job_id": 18,
+        "job_position": "position",
+        "overall_match": 8.26,
+        "missing_skills_req": [],
+        "matching_skills_req": [],
+        "reasoning": "sorin"
+      }
+    ]
+  }
+]

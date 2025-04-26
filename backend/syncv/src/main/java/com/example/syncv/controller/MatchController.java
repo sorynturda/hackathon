@@ -2,6 +2,7 @@ package com.example.syncv.controller;
 
 import com.example.syncv.model.dto.InputDTO;
 import com.example.syncv.model.dto.JobDescriptionDTO;
+import com.example.syncv.model.dto.MatchDTO;
 import com.example.syncv.model.dto.MatchRequestDTO;
 import com.example.syncv.model.dto.fe_service.CVResponse;
 import com.example.syncv.model.dto.fe_service.JDResponse;
@@ -9,6 +10,7 @@ import com.example.syncv.model.dto.ml_service.MatchResponseCVDTO;
 import com.example.syncv.model.dto.ml_service.MatchResponseJDDTO;
 import com.example.syncv.model.entity.CV;
 import com.example.syncv.model.entity.JobDescription;
+import com.example.syncv.model.entity.Match;
 import com.example.syncv.service.CVService;
 import com.example.syncv.service.JobDescriptionService;
 import com.example.syncv.service.MatchService;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/match")
+@RequestMapping("/api/matches")
 public class MatchController {
     private final CVService cvService;
     private final JobDescriptionService jobDescriptionService;
@@ -37,6 +39,42 @@ public class MatchController {
         this.jobDescriptionService = jobDescriptionService;
         this.restTemplate = restTemplate;
         this.matchService = matchService;
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<?> getMatch(@PathVariable Long id) {
+        try {
+            // Get authenticated user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+            MatchDTO match = matchService.getMatch(id);
+
+
+            return ResponseEntity.ok(match);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to retrieve job matches: " + e.getMessage());
+        }
+
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllMatches() {
+        try {
+            // Get authenticated user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+            List<MatchDTO> matches = matchService.getAllMatchesByUser(currentUserEmail);
+
+
+            return ResponseEntity.ok(matches);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to retrieve job matches: " + e.getMessage());
+        }
+
     }
 
     @PostMapping(path = "/cvs/{cvId}")
@@ -69,8 +107,8 @@ public class MatchController {
             matchService.storeMatchesJobs(
                     cv.getUser().getId(),
                     cvId,
-                    (MatchResponseJDDTO)res.getBody()
-                    );
+                    (MatchResponseJDDTO) res.getBody()
+            );
             return ResponseEntity.ok(null);
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
@@ -109,6 +147,23 @@ public class MatchController {
             return ResponseEntity.notFound().build();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteAllMatches() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+
+            matchService.deleteAll(currentUserEmail);
+
+            return ResponseEntity.ok("All matches are deleted successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete matches: " + e.getMessage());
         }
     }
 }

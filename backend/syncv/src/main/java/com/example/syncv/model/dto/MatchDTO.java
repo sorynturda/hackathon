@@ -1,6 +1,6 @@
 package com.example.syncv.model.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record MatchDTO(
         Long id,
@@ -9,8 +9,11 @@ public record MatchDTO(
         String candidateName,
         String position,
         Double score,
-        LocalDate matchDate,
+        LocalDateTime matchDate,
         Long userId,
-        String userEmail
+        String userEmail,
+        String[] missingSkills,
+        String[] matchingSkills,
+        String reasoning
 ) {
 }
