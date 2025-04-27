@@ -83,11 +83,14 @@ Follow these detailed extraction rules:
    - Consider skills from ANY industry or field, including but not limited to: healthcare, finance, education, manufacturing, IT, legal, retail, hospitality, construction, creative arts, scientific research, etc.
    - Be thorough and comprehensive - include ALL technical competencies relevant to performing the job successfully
    - Consider both explicitly stated skills and those implied in the responsibilities or requirements
+   - MAKE SURE TO ONLY USE ONE WORD (OR MAXIMUM A WORD-COMBINATION)
+   - EXTRACT ONLY THE KEYWORD
 
 3. For all SOFT_SKILLS (both required and optional):
    - Extract ALL interpersonal skills, communication abilities, work styles, character traits, etc. mentioned throughout the job description
    - Include ALL professional behavioral attributes relevant to workplace success, regardless of industry
    - Consider both explicitly stated soft skills and those implied in the responsibilities
+   - EXTRACT ONLY THE KEYWORD
 
 4. Clearly distinguish between REQUIRED and OPTIONAL qualifications based on:
    - Sections explicitly labeled as "required" vs "preferred/nice-to-have/beneficial/desirable," etc.
