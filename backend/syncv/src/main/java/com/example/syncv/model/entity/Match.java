@@ -29,11 +29,11 @@ public class Match {
     private Long userId;
     @Column(name = "user_email", nullable = false)
     private String userEmail;
-    @Column(name = "missing_skills", nullable = false)
+    @Column(name = "missing_skills", nullable = false, length = 5000)
     private String missingSkills;
-    @Column(name = "matching_skills", nullable = false)
+    @Column(name = "matching_skills", nullable = false, length = 5000)
     private String matchingSkills;
-    @Column(name= "reasoning", nullable = false)
+    @Column(name= "reasoning", nullable = false, length = 5000)
     private String reasoning;
 
     public void setId(Long id) {
