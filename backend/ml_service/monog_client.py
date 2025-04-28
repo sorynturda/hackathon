@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional, Union
 from datetime import datetime
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from config import MONGODB_CONFIG
 
 # Resume Models
 @dataclass
@@ -101,14 +102,30 @@ class JobPosting:
 
 
 class MongoDBClient:
-    def __init__(self, connection_string, db_name):
-        self.client = MongoClient(connection_string)
-        self.db = self.client[db_name]
+    _instance = None
+    
+    @classmethod
+    def get_instance(cls):
+        """Get or create the singleton instance"""
+        if cls._instance is None:
+            cls._instance = cls(
+                connection_string=MONGODB_CONFIG["connection_string"],
+                db_name=MONGODB_CONFIG["db_name"]
+            )
+        return cls._instance
+    
+    def __init__(self, connection_string=None, db_name=None):
+        """Initialize the MongoDB client with optional parameters"""
+        self.connection_string = connection_string or MONGODB_CONFIG["connection_string"]
+        self.db_name = db_name or MONGODB_CONFIG["db_name"]
+        self.client = MongoClient(self.connection_string)
+        self.db = self.client[self.db_name]
         self.resumes_collection = self.db["cvs"]
         self.job_postings_collection = self.db["jds"]
     
     def close(self):
-        self.client.close()
+        if self.client:
+            self.client.close()
     
     # Resume methods
     def get_resume_by_id(self, resume_id: int) -> Optional[Resume]:
@@ -193,6 +210,7 @@ class MongoDBClient:
             full_text_embedding=doc["full_text_embedding"],
             extracted_info=extracted_info
         )
+
     def _document_to_job_posting(self, doc: Dict) -> Any:
         min_exp = MinimumExperience(
             years=doc["extracted_info"]["REQUIRED_QUALIFICATIONS"].get("MINIMUM_EXPERIENCE", {}).get("years", []),
@@ -208,14 +226,16 @@ class MongoDBClient:
             LANGUAGES=doc["extracted_info"]["REQUIRED_QUALIFICATIONS"].get("LANGUAGES", [])
         )
     
-    # Process OptionalSkills
+        # Process OptionalSkills
+
         optional_skills = OptionalSkills(
             TECHNICAL_SKILLS=doc["extracted_info"].get("OPTIONAL_SKILLS", {}).get("TECHNICAL_SKILLS", []),
             SOFT_SKILLS=doc["extracted_info"].get("OPTIONAL_SKILLS", {}).get("SOFT_SKILLS", []),
             LANGUAGES=doc["extracted_info"].get("OPTIONAL_SKILLS", {}).get("LANGUAGES", [])
         )
     
-    # Create ExtractedJobInfo
+
+        # Create ExtractedJobInfo
         extracted_info = ExtractedJobInfo(
             JOB_TITLE=doc["extracted_info"].get("JOB_TITLE", ""),
             KEY_RESPONSIBILITIES=doc["extracted_info"].get("KEY_RESPONSIBILITIES", []),
@@ -224,7 +244,8 @@ class MongoDBClient:
             OPTIONAL_SKILLS=optional_skills
         )
     
-    # Create JobPosting
+
+        # Create JobPosting
         return JobPosting(
             _id=doc["_id"],
             user_id=doc["user_id"],

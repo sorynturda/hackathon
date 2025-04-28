@@ -62,6 +62,8 @@ def get_mongo_jd_document(id, data, full_text, user_id):
 def transform(data):
     cv_final_docs = []
     jd_final_docs = [] 
+    cv_delete_ids = []
+    jd_delete_ids = []
     db = SessionLocal()
     try:
         messages = json.loads(data)
@@ -71,6 +73,18 @@ def transform(data):
         for item in messages:
             item_type = item.get("type")
             item_id = item.get("id")
+            is_delete = item.get("delete", False)
+            
+            # Handle delete operation
+            if is_delete and item_id is not None:
+                if item_type == 'cvs':
+                    cv_delete_ids.append(item_id)
+                    continue
+                elif item_type == 'jds':
+                    jd_delete_ids.append(item_id)
+                    continue
+                
+            # Existing code for processing documents
             if item_type == 'cvs' and item_id is not None:
                 cv = db.query(CV).filter(CV.id == item_id).first()
                 if cv:
@@ -97,4 +111,22 @@ def transform(data):
         print(e)
         return ([], 'null')
     
+    # Handle CV delete operations
+    if cv_delete_ids:
+        from load.load import delete_cvs
+        for item_id in cv_delete_ids:
+            deleted_count = delete_cvs(item_id)
+            print(f"Deleted {deleted_count} CV document(s) with _id {item_id}")
+    
+    # Handle JD delete operations
+    if jd_delete_ids:
+        from load.load import delete_jds
+        for item_id in jd_delete_ids:
+            deleted_count = delete_jds(item_id)
+            print(f"Deleted {deleted_count} JD document(s) with _id {item_id}")
+        
+    # If only delete operations were performed, return empty result
+    if (len(cv_delete_ids) > 0 or len(jd_delete_ids) > 0) and len(cv_final_docs) == 0 and len(jd_final_docs) == 0:
+        return ([], 'null')
+        
     return (cv_final_docs, 'cvs') if len(cv_final_docs)>0 else (jd_final_docs,'jds')
