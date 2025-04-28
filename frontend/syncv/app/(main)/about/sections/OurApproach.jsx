@@ -47,7 +47,7 @@ const OurMission = () => {
           </motion.div>
           <motion.div
             ref={textRef1}
-            className="col-start-3 col-span-4 body-small text-black mt-[40px]"
+            className="col-start-3 col-span-4 max-md:col-start-3 max-md:col-span-5 body-small text-black mt-[40px]"
             initial={{ opacity: 0, y: 20 }}
             animate={{
               opacity: isText1InView ? 1 : 0,
@@ -61,7 +61,7 @@ const OurMission = () => {
           </motion.div>
           <motion.div
             ref={textRef2}
-            className="col-start-7 col-span-2 body-small text-black mt-[120px]"
+            className="col-start-7 col-span-2 max-md:col-start-8 max-md:col-span-5 body-small text-black mt-[120px]"
             initial={{ opacity: 0, y: 20 }}
             animate={{
               opacity: isText2InView ? 1 : 0,

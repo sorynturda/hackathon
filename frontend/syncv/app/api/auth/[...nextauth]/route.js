@@ -1,3 +1,4 @@
+// app/api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
@@ -14,18 +15,18 @@ export const authOptions = {
       },
       async authorize(credentials) {
         try {
-         
           const response = await axios.post(`${API_URL}/api/auth/login`, {
             email: credentials.email,
             password: credentials.password,
           });
 
-          if (response.data && response.data.data.token) {
+          if (response.data && response.data.data && response.data.data.token) {
+            // Return user object that NextAuth can use
             return {
-              id: credentials.email,
+              id: response.data.data.id || credentials.email,
               email: credentials.email,
-              token: response.data.data.token,
-              tokenType: response.data.data.type,
+              accessToken: response.data.data.token,
+              tokenType: response.data.data.type || 'Bearer',
             };
           }
           return null;
@@ -39,29 +40,29 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.token;
+        token.accessToken = user.accessToken;
         token.tokenType = user.tokenType;
         token.email = user.email;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken;
       session.tokenType = token.tokenType;
-      session.user.email = token.email;
+      session.user = {
+        email: token.email,
+        id: token.id,
+      };
       return session;
     },
   },
-  pages: {
-    signIn: "/login",
-    signUp: "/signup",
-    error: "/auth/error",
-  },
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, 
+    maxAge: 24 * 60 * 60,
   },
-  secret: process.env.NEXTAUTH_SECRET || "your-default-secret-key",
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: true,
 };
 
 const handler = NextAuth(authOptions);

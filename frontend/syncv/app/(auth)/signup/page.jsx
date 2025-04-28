@@ -8,6 +8,7 @@ const SignupPage = () => {
     username: "",
     email: "",
     password: "",
+    agreePolicy: false,
   });
   const [error, setError] = useState("");
   const { register, loading } = useAuth();
@@ -33,10 +34,10 @@ const SignupPage = () => {
   };
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
+    const { id, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [id]: value,
+      [id]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -44,14 +45,18 @@ const SignupPage = () => {
     e.preventDefault();
     setError("");
 
+    if (!formData.agreePolicy) {
+      setError("You must agree to the Privacy Policy to continue.");
+      return;
+    }
+
     try {
+      console.log("Form submission:", formData);
       await register(formData.username, formData.email, formData.password);
-      // Navigation is handled inside the register function
+      // Registration successful - redirect is handled in the register function
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "Registration failed. Please try again with different credentials."
-      );
+      console.error("Signup error:", err);
+      setError(err.message || "Registration failed. Please try again.");
     }
   };
 
@@ -173,15 +178,55 @@ const SignupPage = () => {
                 />
               </motion.div>
 
+              <motion.div
+                className="flex items-start gap-2 mt-2"
+                initial="initial"
+                animate="animate"
+                custom={3}
+                variants={formVariants}
+              >
+                <input
+                  id="agreePolicy"
+                  type="checkbox"
+                  checked={formData.agreePolicy}
+                  onChange={handleChange}
+                  className="mt-1"
+                  required
+                />
+                <label
+                  className="body-small text-white/70"
+                  htmlFor="agreePolicy"
+                >
+                  I agree to the{" "}
+                  <a
+                    href="/privacy-policy"
+                    className="text-accent hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Privacy Policy
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="/terms"
+                    className="text-accent hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Terms of Service
+                  </a>
+                </label>
+              </motion.div>
+
               <motion.button
                 type="submit"
                 disabled={loading}
-                className={`bg-accent text-black body py-3 mt-6 hover:bg-black hover:text-white transition-colors duration-300 ${
+                className={`bg-accent text-black body py-3 mt-4 hover:bg-black hover:text-white transition-colors duration-300 ${
                   loading ? "opacity-70 cursor-not-allowed" : ""
                 }`}
                 initial="initial"
                 animate="animate"
-                custom={3}
+                custom={4}
                 variants={formVariants}
               >
                 {loading ? "SIGNING UP..." : "SIGN UP"}
@@ -191,7 +236,7 @@ const SignupPage = () => {
                 className="flex justify-center items-center mt-4"
                 initial="initial"
                 animate="animate"
-                custom={4}
+                custom={5}
                 variants={formVariants}
               >
                 <p className="body text-white/70">Have an account? </p>

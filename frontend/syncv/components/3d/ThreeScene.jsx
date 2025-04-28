@@ -1,4 +1,3 @@
-// components/3d/ThreeScene.jsx
 "use client";
 import React, { useRef, useState, Suspense, useEffect } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
@@ -7,7 +6,6 @@ import { OrbitControls, Environment } from "@react-three/drei";
 import ScrollAnimationController from "./ScrollAnimationController";
 import SimpleLoaderAnimation from "../common/LoaderAnimation";
 
-// Helper function to interpolate values with a more aggressive curve for small screens
 const responsiveValue = (
   minWidth,
   maxWidth,
@@ -24,27 +22,21 @@ const responsiveValue = (
   return minValue + percentage * (maxValue - minValue);
 };
 
-// The CV Model is defined within the same file
 function Model({ modelPath, viewportWidth, onLoaded }) {
   const modelRef = useRef();
   const gltf = useLoader(GLTFLoader, modelPath);
 
-  // Signal when model is loaded
   useEffect(() => {
     if (gltf && onLoaded) {
-      // Small delay to ensure model is visible
       setTimeout(() => {
         onLoaded();
       }, 300);
     }
   }, [gltf, onLoaded]);
 
-  // Base keyframe templates
   const baseKeyframes = [
-    // Hero section
     { scrollY: 0, rotation: [0.02, 0, 0] },
     { scrollY: 0.05, rotation: [0.02, 0, 0] },
-    // About1 section
     { scrollY: 1, rotation: [-0.3, -0.4, 0] },
     { scrollY: 1.7, rotation: [-0.3, -0.6, 0] },
     { scrollY: 2, rotation: [-0.3, 0.2, 0] },
@@ -54,11 +46,8 @@ function Model({ modelPath, viewportWidth, onLoaded }) {
     { scrollY: 4.55, rotation: [0.02, 0, 0] },
   ];
 
-  // Generate responsive keyframes based on screen width
   const responsiveKeyframes = baseKeyframes.map((keyframe) => {
-    // Define min and max values for different properties
     const configs = {
-      // First hero position
       0: {
         position: [
           0,
@@ -67,7 +56,6 @@ function Model({ modelPath, viewportWidth, onLoaded }) {
         ],
         scale: responsiveValue(375, 1920, 0.3, 1.6, viewportWidth),
       },
-      // Second hero position (same as first for this section)
       0.05: {
         position: [
           0,
@@ -76,44 +64,36 @@ function Model({ modelPath, viewportWidth, onLoaded }) {
         ],
         scale: responsiveValue(375, 1920, 0.3, 1.6, viewportWidth),
       },
-      // First about section - left side
       1: {
         position: [responsiveValue(375, 1920, 20, 25, viewportWidth), 0, 0],
         scale: responsiveValue(375, 1920, 0.5, 1.0, viewportWidth),
       },
-      // Continue first about section
       1.7: {
         position: [responsiveValue(375, 1920, 20, 25, viewportWidth), 0, 0],
         scale: responsiveValue(375, 1920, 0.5, 0.9, viewportWidth),
       },
-      // Second about section - right side
       2: {
         position: [responsiveValue(375, 1920, -20, -25, viewportWidth), 0, 0],
         scale: responsiveValue(375, 1920, 0.5, 1.0, viewportWidth),
       },
-      // Continue second about section
       2.5: {
         position: [responsiveValue(375, 1920, -20, -25, viewportWidth), 0, 0],
         scale: responsiveValue(375, 1920, 0.45, 0.9, viewportWidth),
       },
-      // Third section
       4: {
         position: [0, 0, responsiveValue(375, 1920, -20, -60, viewportWidth)],
         scale: responsiveValue(375, 1920, 0.6, 1.6, viewportWidth),
       },
-      // Continue third section
       4.45: {
         position: [0, 0, responsiveValue(375, 1920, -20, -60, viewportWidth)],
         scale: responsiveValue(375, 1920, 0.6, 1.6, viewportWidth),
       },
-      // Final position
       4.55: {
         position: [0, 0, responsiveValue(375, 1920, -30, -80, viewportWidth)],
         scale: responsiveValue(375, 1920, 0.6, 1.6, viewportWidth),
       },
     };
 
-    // Apply responsive values for the current keyframe scroll position
     return {
       scrollY: keyframe.scrollY,
       position: configs[keyframe.scrollY]?.position || [0, 0, 0],
@@ -121,7 +101,6 @@ function Model({ modelPath, viewportWidth, onLoaded }) {
       scale: configs[keyframe.scrollY]?.scale || 1.0,
     };
   });
-
 
   return (
     <>
@@ -139,14 +118,12 @@ function Model({ modelPath, viewportWidth, onLoaded }) {
   );
 }
 
-// Main component that exports
 export default function ThreeScene({ modelPath = "/models/cv.glb" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1920
   );
 
-  // Track screen width for responsive adjustments
   useEffect(() => {
     const updateScreenWidth = () => {
       setViewportWidth(window.innerWidth);
@@ -157,7 +134,6 @@ export default function ThreeScene({ modelPath = "/models/cv.glb" }) {
     return () => window.removeEventListener("resize", updateScreenWidth);
   }, []);
 
-  // Create responsive camera properties
   const cameraPosition = responsiveValue(375, 1920, 20, 50, viewportWidth);
   const cameraFov = responsiveValue(375, 1920, 80, 60, viewportWidth);
 
@@ -167,7 +143,6 @@ export default function ThreeScene({ modelPath = "/models/cv.glb" }) {
   };
 
   const handleModelLoaded = () => {
-    // Model is ready, can be shown
     console.log("3D model loaded successfully");
   };
 

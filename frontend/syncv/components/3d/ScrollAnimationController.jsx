@@ -3,7 +3,6 @@ import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Vector3, Euler } from "three";
 
-// Helper to interpolate between two values
 const lerp = (start, end, t) => {
   return start * (1 - t) + end * t;
 };
@@ -12,17 +11,14 @@ export default function ScrollAnimationController({ target, keyframes }) {
   const modelRef = useRef();
   const scrollY = useRef(0);
 
-  // Current state values
   const currentPosition = useRef(new Vector3(0, 0, 0));
   const currentRotation = useRef(new Euler(0, 0, 0));
   const currentScale = useRef(1);
 
-  // Set up scroll listener and model reference
   useEffect(() => {
     if (target && target.current) {
       modelRef.current = target.current;
 
-      // Initialize with starting position
       const initialKeyframe = keyframes[0];
       currentPosition.current.set(...initialKeyframe.position);
       currentRotation.current.set(...initialKeyframe.rotation);
@@ -39,7 +35,6 @@ export default function ScrollAnimationController({ target, keyframes }) {
       }
     }
 
-    // Scroll handler
     const handleScroll = () => {
       scrollY.current = window.scrollY;
     };
@@ -48,15 +43,12 @@ export default function ScrollAnimationController({ target, keyframes }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [target, keyframes]);
 
-  // Animation loop
   useFrame(() => {
     if (!modelRef.current) return;
 
-    // Convert scroll to vh units
     const vh = window.innerHeight;
     const scrollInVh = scrollY.current / vh;
 
-    // Find the two keyframes we're between
     let startKeyframe = keyframes[0];
     let endKeyframe = keyframes[keyframes.length - 1];
 
@@ -71,15 +63,12 @@ export default function ScrollAnimationController({ target, keyframes }) {
       }
     }
 
-    // Calculate progress between keyframes
     const progress =
       (scrollInVh - startKeyframe.scrollY) /
       (endKeyframe.scrollY - startKeyframe.scrollY);
 
-    // Apply smooth transitions with damping
     const damping = 0.05;
 
-    // Position
     currentPosition.current.x +=
       (lerp(startKeyframe.position[0], endKeyframe.position[0], progress) -
         currentPosition.current.x) *
@@ -93,7 +82,6 @@ export default function ScrollAnimationController({ target, keyframes }) {
         currentPosition.current.z) *
       damping;
 
-    // Rotation
     currentRotation.current.x +=
       (lerp(startKeyframe.rotation[0], endKeyframe.rotation[0], progress) -
         currentRotation.current.x) *
@@ -107,13 +95,11 @@ export default function ScrollAnimationController({ target, keyframes }) {
         currentRotation.current.z) *
       damping;
 
-    // Scale
     currentScale.current +=
       (lerp(startKeyframe.scale, endKeyframe.scale, progress) -
         currentScale.current) *
       damping;
 
-    // Apply to model
     modelRef.current.position.copy(currentPosition.current);
     modelRef.current.rotation.x = currentRotation.current.x;
     modelRef.current.rotation.y = currentRotation.current.y;
