@@ -5,6 +5,7 @@ from logic import get_matches_for_resume, get_matches_for_jd, get_comprehensive_
 
 app = FastAPI(title="ML Service API")
 
+
 class InputDTO(BaseModel):
     skill: str
     weight: float

@@ -210,7 +210,7 @@ class MongoDBClient:
             full_text_embedding=doc["full_text_embedding"],
             extracted_info=extracted_info
         )
-        
+
     def _document_to_job_posting(self, doc: Dict) -> Any:
         min_exp = MinimumExperience(
             years=doc["extracted_info"]["REQUIRED_QUALIFICATIONS"].get("MINIMUM_EXPERIENCE", {}).get("years", []),
@@ -227,12 +227,14 @@ class MongoDBClient:
         )
     
         # Process OptionalSkills
+
         optional_skills = OptionalSkills(
             TECHNICAL_SKILLS=doc["extracted_info"].get("OPTIONAL_SKILLS", {}).get("TECHNICAL_SKILLS", []),
             SOFT_SKILLS=doc["extracted_info"].get("OPTIONAL_SKILLS", {}).get("SOFT_SKILLS", []),
             LANGUAGES=doc["extracted_info"].get("OPTIONAL_SKILLS", {}).get("LANGUAGES", [])
         )
     
+
         # Create ExtractedJobInfo
         extracted_info = ExtractedJobInfo(
             JOB_TITLE=doc["extracted_info"].get("JOB_TITLE", ""),
@@ -242,6 +244,7 @@ class MongoDBClient:
             OPTIONAL_SKILLS=optional_skills
         )
     
+
         # Create JobPosting
         return JobPosting(
             _id=doc["_id"],
