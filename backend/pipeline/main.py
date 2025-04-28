@@ -5,13 +5,18 @@ from transform.decoder import callGemini
 from models.cv import CV
 from models.jd import JD
 from transform.transform import transform
-from load.load import load_cvs, load_jds
+from load.load import load_cvs, load_jds, delete_cvs, delete_jds
 
 subscriber = None
 
 def message_callback(channel, data):
     print(f'Received message on channel {channel} : {data}')
     transformed_data, load_collection = transform(data)
+    
+    # Skip loading if no data to load (e.g., in case of delete operation)
+    if not transformed_data:
+        return
+        
     if load_collection == 'cvs':
         load_cvs(transformed_data)
     elif load_collection == 'jds':
