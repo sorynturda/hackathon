@@ -3,6 +3,10 @@ import numpy as np
 import re
 from difflib import SequenceMatcher
 from datetime import datetime
+from google import genai
+from google.genai import types
+
+client = genai.Client(api_key="AIzaSyCvdbsLw-GOzbq0SXhg5b0bAN06fsAA2h4")  
 
 def fuzzy_similarity(str1, str2):
         """Calculate fuzzy string similarity using SequenceMatcher"""
@@ -327,3 +331,75 @@ def generate_match_reasoning(candidate_name, vector_score, skills_score, languag
         reasons.append("Resume shows limited semantic similarity to the job requirements.")
     
     return " ".join(reasons)
+
+
+
+
+def generate_match_reasoning_with_llm(candidate_name, vector_score, skills_score, language_score, 
+                           experience_score, custom_skills_score,
+                           skills_matching, unmatched_skills,
+                           candidate_years, job_min_years, job_max_years,
+                           custom_skills_matches, custom_skills_missing):
+    """Generate human-readable reasoning for the match score using Gemini LLM"""
+    
+    # Construct the prompt with all the match information
+    prompt = f"""
+    You are an AI assistant specializing in resume-job matching analysis. Write a concise but informative reasoning (50-100 words) 
+    explaining why a candidate matches or doesn't match a job position based on the following data:
+
+    Candidate: {candidate_name}
+    Experience: {candidate_years} years (Job requires: {job_min_years if job_min_years is not None else 'Not specified'} 
+                to {job_max_years if job_max_years is not None else 'Not specified'} years)
+    
+    Vector similarity score: {vector_score}/10 
+    (Measures how well the resume's content semantically matches the job description)
+    
+    
+    Language score: {language_score}/10
+    (How well candidate's language proficiencies match job requirements)
+    
+    Experience score: {experience_score}/10
+    (How well candidate's years of experience match job requirements)
+
+    Matching skills: {', '.join(skills_matching) if skills_matching else 'None'}
+    
+    Tone: Professional, objective
+    Style: Concise but informative, highlighting key strengths and gaps
+    Word limit: 50-100 words
+    
+    IMPORTANT: Focus on the most significant factors affecting the match and provide a balanced assessment.
+    DO NOT list all the metrics in your response - synthesize the information into a coherent explanation.
+    """
+    
+    try:
+        # Call the Gemini model
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-lite", 
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.1,  # Low temperature for more consistent outputs
+                max_output_tokens=200  # Limiting token count for concise responses
+            )
+        )
+        
+        # Extract and return the text
+        reasoning = response.text.strip()
+        
+        # If the response is too long, truncate it
+        if len(reasoning.split()) > 120:  # Giving some buffer over the requested 100 words
+            words = reasoning.split()
+            reasoning = ' '.join(words[:100]) + '...'
+            
+        return reasoning
+        
+    except Exception as e:
+        # Fallback to a simple reasoning in case of API error
+        print(f"Error calling Gemini API: {e}")
+        if candidate_years >= (job_min_years or 0):
+            experience_text = f"{candidate_name} meets the experience requirement with {candidate_years} years."
+        else:
+            experience_text = f"{candidate_name} has insufficient experience ({candidate_years} years)."
+            
+        skills_text = f"Matches {len(skills_matching)} required skills" if skills_matching else "Matches no required skills"
+        
+        return f"{experience_text} {skills_text}. Overall semantic match score: {vector_score}/10."

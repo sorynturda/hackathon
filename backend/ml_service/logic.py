@@ -4,7 +4,7 @@ import numpy as np
 import re
 from difflib import SequenceMatcher
 from datetime import datetime
-from logic_helper import generate_match_reasoning,extract_resume_skills, calculate_skills_score, extract_job_experience_years, fuzzy_similarity, find_best_skill_match, find_skill_matches, extract_years_from_text, compute_experience_match_score, calculate_experience_years, compute_language_match_score, cosine_similarity
+from logic_helper import generate_match_reasoning_with_llm,generate_match_reasoning,extract_resume_skills, calculate_skills_score, extract_job_experience_years, fuzzy_similarity, find_best_skill_match, find_skill_matches, extract_years_from_text, compute_experience_match_score, calculate_experience_years, compute_language_match_score, cosine_similarity
 
 
 def get_matches_for_resume(id: int, userId: int, limit: int = 5):
@@ -189,10 +189,11 @@ def get_comprehensive_matches_for_resume(id: int, userId: int, limit: int = 10,
         # Step 1: Get initial candidates using vector similarity (experience-based matching)
         initial_matches = get_matches_for_resume(id, userId, limit * 5)
         job_ids = [match["job_id"] for match in initial_matches]
+
         vector_scores = {match["job_id"]: match["similarity_score"] for match in initial_matches}
         
         if not job_ids:
-            return []
+            return {"candidate_name": resume.extracted_info.NAME, "jobs": []}
         
         # Step 2: Extract resume skills using the helper function
         resume_tech_skills, resume_soft_skills = extract_resume_skills(resume)
@@ -250,65 +251,71 @@ def get_comprehensive_matches_for_resume(id: int, userId: int, limit: int = 10,
                 (experience_weight * experience_score_scaled)
             )
             
-            # Add to results
-            combined_scores.append({
+            # Generate reasoning text using the LLM function
+            reasoning = generate_match_reasoning_with_llm(
+                resume.extracted_info.NAME,
+                vector_score, skills_score_scaled, language_score_scaled, 
+                experience_score_scaled, 0,  # No custom skills score for resume matching
+                skills_matching, unmatched_skills,
+                resume_experience_years, job_min_years, job_max_years,
+                [], []  # No custom skills for resume matching
+            )
+            
+            # Format job match in the required structure
+            job_match = {
                 "job_id": job_id,
-                "job_title": job.extracted_info.JOB_TITLE,
-                "vector_score": round(vector_score, 2),
-                "skills_score": round(skills_score_scaled, 2),
-                "language_score": round(language_score_scaled, 2),
-                "experience_score": round(experience_score_scaled, 2),
-                "composite_score": round(composite_score, 2),
-                "skills_matching": skills_matching,
-                "skills_missing": unmatched_skills,  # Added missing skills
-                "language_matching": [lang.language for lang in resume.extracted_info.LANGUAGES if any(fuzzy_similarity(lang.language, job_lang) >= 0.9 for job_lang in required_languages)],
-                "experience_summary": {
-                    "candidate_years": resume_experience_years,
-                    "job_required_min": job_min_years,
-                    "job_required_max": job_max_years
-                }
-            })
+                "job_position": job.extracted_info.JOB_TITLE,
+                "overall_match": round(composite_score, 2),
+                "missing_skills_req": unmatched_skills["required_tech"],  # Using just technical required skills
+                "matching_skills_req": skills_matching,
+                "reasoning": reasoning
+            }
+            
+            combined_scores.append(job_match)
         
         # Sort by composite score and return top results
-        combined_scores.sort(key=lambda x: x["composite_score"], reverse=True)
-        return combined_scores[:limit]
+        combined_scores.sort(key=lambda x: x["overall_match"], reverse=True)
+        top_jobs = combined_scores[:limit]
+        
+        # Format final response
+        response = {
+            "candidate_name": resume.extracted_info.NAME,
+            "jobs": top_jobs
+        }
+        
+        return response
+        
     except Exception as e:
         print(e)
-        return []
-
+        return {"candidate_name": "Unknown", "jobs": []}
 
 
 def get_comprehensive_matches_for_job(id: int, userId: int, limit: int = 10,
                                      vector_weight=0.50, skills_weight=0.20,
                                      language_weight=0.10, experience_weight=0.20,
                                      custom_skills_inputs=None):
-    """
-    Get comprehensive matches for a job posting with weighted skill inputs.
-    
-    Args:
-        id: Job posting ID
-        userId: User ID
-        limit: Maximum number of results to return
-        vector_weight: Weight for vector similarity (semantic match)
-        skills_weight: Weight for skills match
-        language_weight: Weight for language match
-        experience_weight: Weight for experience match
-        custom_skills_inputs: List of dicts with 'skill' and 'weight' keys
-        
-    Returns:
-        Dictionary with job position and list of matching candidates
-    """
     mongo_client = MongoDBClient.get_instance()
     
-    # Adjust weights to represent 60% of the total score
-    original_total = vector_weight + skills_weight + language_weight + experience_weight
-    adjusted_vector_weight = (vector_weight / original_total) * 0.6
-    adjusted_skills_weight = (skills_weight / original_total) * 0.6
-    adjusted_language_weight = (language_weight / original_total) * 0.6
-    adjusted_experience_weight = (experience_weight / original_total) * 0.6
+    # Check if custom skills are provided
+    has_custom_skills = custom_skills_inputs and len(custom_skills_inputs) > 0
     
-    # Custom skills account for 40% of the total score
-    custom_skills_weight = 0.4
+    if has_custom_skills:
+        # If custom skills are provided, adjust weights to represent 60% of the total score
+        original_total = vector_weight + skills_weight + language_weight + experience_weight
+        adjusted_vector_weight = (vector_weight / original_total) * 0.6
+        adjusted_skills_weight = (skills_weight / original_total) * 0.6
+        adjusted_language_weight = (language_weight / original_total) * 0.6
+        adjusted_experience_weight = (experience_weight / original_total) * 0.6
+        
+        # Custom skills account for 40% of the total score
+        custom_skills_weight = 0.4
+    else:
+        # If no custom skills are provided, use the original weights as 100%
+        adjusted_vector_weight = vector_weight
+        adjusted_skills_weight = skills_weight
+        adjusted_language_weight = language_weight
+        adjusted_experience_weight = experience_weight
+        custom_skills_weight = 0  # No weight for custom skills
     
     try:
         job = mongo_client.get_job_by_id(id)
@@ -371,17 +378,17 @@ def get_comprehensive_matches_for_job(id: int, userId: int, limit: int = 10,
             # Scale all scores to 0-10 to match vector similarity scale
             skills_score_scaled = skills_score * 10
             language_score_scaled = language_score * 10
-            experience_score_scaled = experience_score * 10
+            experience_score_scaled = experience_score * 10 
             
             # Get vector score (assuming 0-10 scale)
             vector_score = vector_scores[resume_id]
             
-            # Calculate custom skills match score (if provided)
+            # Calculate custom skills match score (only if custom skills are provided)
             custom_skills_score = 0
             custom_skills_matches = []
             custom_skills_missing = []
             
-            if custom_skills:
+            if has_custom_skills:
                 total_weight = sum(item["weight"] for item in custom_skills)
                 normalized_weights = {item["skill"]: (item["weight"] / total_weight if total_weight > 0 else 0) 
                                       for item in custom_skills}
@@ -399,24 +406,24 @@ def get_comprehensive_matches_for_job(id: int, userId: int, limit: int = 10,
                         custom_skills_matches.append(skill_name)
                     else:
                         custom_skills_missing.append(skill_name)
-            else:
-                # If no custom skills provided, give full score to avoid penalizing
-                custom_skills_score = 10
             
-            # Calculate composite score with all weights (60% original + 40% custom skills)
+            # Calculate composite score with weights
             composite_score = (
                 (adjusted_vector_weight * vector_score) + 
                 (adjusted_skills_weight * skills_score_scaled) + 
                 (adjusted_language_weight * language_score_scaled) + 
-                (adjusted_experience_weight * experience_score_scaled) +
-                (custom_skills_weight * custom_skills_score)
+                (adjusted_experience_weight * experience_score_scaled)
             )
             
-            # Generate reasoning text
-            reasoning = generate_match_reasoning(
+            # Only add custom skills component if it exists
+            if has_custom_skills:
+                composite_score += (custom_skills_weight * custom_skills_score)
+            
+            # Generate reasoning text using LLM
+            reasoning = generate_match_reasoning_with_llm(
                 resume.extracted_info.NAME,
                 vector_score, skills_score_scaled, language_score_scaled, 
-                experience_score_scaled, custom_skills_score,
+                experience_score_scaled, custom_skills_score if has_custom_skills else None,
                 skills_matching, unmatched_skills,
                 resume_experience_years, job_min_years, job_max_years,
                 custom_skills_matches, custom_skills_missing
@@ -430,7 +437,7 @@ def get_comprehensive_matches_for_job(id: int, userId: int, limit: int = 10,
                 "skills_score": round(skills_score_scaled, 2),
                 "language_score": round(language_score_scaled, 2),
                 "experience_score": round(experience_score_scaled, 2),
-                "custom_skills_score": round(custom_skills_score, 2),
+                "custom_skills_score": round(custom_skills_score, 2) if has_custom_skills else None,
                 "composite_score": round(composite_score, 2),
                 "skills_matching": skills_matching,
                 "skills_missing": unmatched_skills,
@@ -446,13 +453,26 @@ def get_comprehensive_matches_for_job(id: int, userId: int, limit: int = 10,
                 "custom_skills_missing": custom_skills_missing
             }
             
-            # Prepare response object format
+            # Prepare response object format - include custom skills in matching/missing skills
+            all_matching_skills = skills_matching.copy()
+            all_missing_skills = unmatched_skills["required_tech"].copy()
+            
+            # Add custom skills to matching/missing if they exist
+            if has_custom_skills:
+                for skill in custom_skills_matches:
+                    if skill not in all_matching_skills:
+                        all_matching_skills.append(skill.replace(' ', '_'))
+                        
+                for skill in custom_skills_missing:
+                    if skill not in all_missing_skills:
+                        all_missing_skills.append(skill)
+            
             response_match = {
                 "cv_id": resume_id,
                 "candidate_name": resume.extracted_info.NAME,
                 "overall_match": round(composite_score, 2),
-                "missing_skills_req": unmatched_skills["required_tech"],
-                "matching_skills_req": skills_matching,
+                "missing_skills_req": all_missing_skills,
+                "matching_skills_req": all_matching_skills,
                 "reasoning": reasoning
             }
             
