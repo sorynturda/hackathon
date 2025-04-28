@@ -113,7 +113,7 @@ public class MatchController {
             // se returneaza lista de jd-uri (dto momentan)
             // se face request la API-ul de la serverul de fastAPI care returneaza un JSON cu scor si id
             JobDescription jd = jobDescriptionService.getJobDescription(jdId);
-            MatchRequestDTO requestBody = new MatchRequestDTO(jdId, jd.getUser().getId(), 2, inputs.stream().map(i -> new InputDTO(i.getSkill().trim(), i.getWeight())).toList());
+            MatchRequestDTO requestBody = new MatchRequestDTO(jdId, jd.getUser().getId(), 5, inputs.stream().map(i -> new InputDTO(i.getSkill().trim(), i.getWeight())).toList());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
