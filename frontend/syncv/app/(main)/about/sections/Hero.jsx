@@ -54,8 +54,9 @@ const Hero = () => {
             >
               33%
             </motion.div>
+
             <motion.div
-              className="border-t border-black text-justify pt-[20px] body-small"
+              className="border-t border-black text-justify pt-[20px] body-small max-md:hidden"
               initial="initial"
               animate="animate"
               custom={0}
@@ -64,6 +65,15 @@ const Hero = () => {
               Reduction in recruitment time compared to traditional CV screening
               methods. Our AI-powered system analyzes and matches candidates in
               seconds, not days.
+            </motion.div>
+            <motion.div
+              className="border-t border-black text-justify pt-[20px] body-small md:hidden"
+              initial="initial"
+              animate="animate"
+              custom={0}
+              variants={statsVariants}
+            >
+              AI-powered matching reduces recruitment from days to seconds.
             </motion.div>
           </div>
         </div>
@@ -80,7 +90,7 @@ const Hero = () => {
               66%
             </motion.div>
             <motion.div
-              className="border-t border-black text-justify pt-[20px] body-small"
+              className="border-t border-black text-justify pt-[20px] body-small max-md:hidden"
               initial="initial"
               animate="animate"
               custom={1}
@@ -89,6 +99,16 @@ const Hero = () => {
               Higher accuracy in candidate-job matching compared to manual
               screening. Our technology identifies critical skills and
               experiences that directly impact job success rates.
+            </motion.div>
+            <motion.div
+              className="border-t border-black text-justify pt-[20px] body-small md:hidden"
+              initial="initial"
+              animate="animate"
+              custom={1}
+              variants={statsVariants}
+            >
+              Higher accuracy than manual screening, identifying skills that
+              drive job success.
             </motion.div>
           </div>
         </div>
@@ -105,7 +125,7 @@ const Hero = () => {
               99%
             </motion.div>
             <motion.div
-              className="border-t border-black text-justify pt-[20px] body-small"
+              className="border-t border-black text-justify pt-[20px] body-small max-md:hidden"
               initial="initial"
               animate="animate"
               custom={2}
@@ -115,12 +135,22 @@ const Hero = () => {
               transforms recruitment by providing clear, actionable results you
               can trust immediately.
             </motion.div>
+            <motion.div
+              className="border-t border-black text-justify pt-[20px] body-small md:hidden"
+              initial="initial"
+              animate="animate"
+              custom={2}
+              variants={statsVariants}
+            >
+              Client satisfaction guaranteed with clear, actionable results you
+              can trust.
+            </motion.div>
           </div>
         </div>
       </Layout>
 
       <motion.div
-        className="absolute right-[20px] top-[15%] origin-bottom-right -rotate-90 body-small"
+        className="absolute right-[20px] max-md:right-[0px] top-[15%] origin-bottom-right -rotate-90 body-small"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.7, delay: 1 }}

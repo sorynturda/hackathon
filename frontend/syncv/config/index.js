@@ -1,7 +1,5 @@
-// Configuration settings for the application
 
 const config = {
-    // API settings
     api: {
       baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001",
       endpoints: {
@@ -14,18 +12,15 @@ const config = {
           profile: "/api/users/profile",
           update: "/api/users/profile",
         },
-        // Add other API endpoints as needed
       },
     },
     
-    // Authentication settings
     auth: {
-      tokenKey: "auth_token", // For local storage token key (if needed)
-      tokenType: "Bearer", // Default token type
-      sessionMaxAge: 24 * 60 * 60, // 24 hours in seconds
+      tokenKey: "auth_token", 
+      tokenType: "Bearer",
+      sessionMaxAge: 24 * 60 * 60,
     },
     
-    // Route settings
     routes: {
       public: ["/", "/about", "/login", "/signup"],
       authCallbackUrl: "/dashboard",

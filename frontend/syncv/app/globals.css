@@ -1,24 +1,49 @@
+/* Solution 1: Font Family Fallbacks and Local Fonts */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.cdnfonts.com/css/helvetica-neue-9');
+/* Import with a more reliable approach and add fallbacks */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+/* Define font-face for Helvetica Neue with multiple sources */
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: local('Helvetica Neue'),
+       url('/fonts/helvetica-neue.woff2') format('woff2'),
+       url('/fonts/helvetica-neue.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* This helps with FOUT (Flash of Unstyled Text) */
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: local('Helvetica Neue Bold'),
+       url('/fonts/helvetica-neue-bold.woff2') format('woff2'),
+       url('/fonts/helvetica-neue-bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer components {
   .h1 {
-    @apply font-['Helvetica_Neue'] font-bold;
+    /* Consistent naming and add fallbacks */
+    @apply font-['Helvetica_Neue',_'Helvetica',_'Arial',_sans-serif] font-bold;
     font-size: clamp(64px, 10vw, 180px);
     line-height: clamp(80px, 7vw, 130px);
   }
   
   .h2 {
-    @apply font-helvetica-neue font-bold;
+    /* Match the same font-family approach as h1 */
+    @apply font-['Helvetica_Neue',_'Helvetica',_'Arial',_sans-serif] font-bold;
     font-size: clamp(36px, 7vw, 96px);
     line-height: clamp(42px, 5vw, 69px);
   }
   
   .h3 {
-    @apply font-helvetica-neue font-bold;
+    @apply font-['Helvetica_Neue',_'Helvetica',_'Arial',_sans-serif] font-bold;
     font-size: clamp(28px, 7vw, 48px);
     line-height: clamp(36px, 5.5vw, 76px);
   }
@@ -34,4 +59,25 @@
     font-size: clamp(14px, 1vw, 16px);
     line-height: clamp(20px, 1.4vw, 22.4px);
   }
+}
+
+/* Scrollbar styles remain unchanged */
+.scroll-container {
+  height: 500px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: #EC6B2D;
+  border-radius: 4px;
 }

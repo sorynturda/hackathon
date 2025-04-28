@@ -11,7 +11,6 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const { login, loading } = useAuth();
 
-  // Animation variants
   const titleVariants = {
     initial: { opacity: 0, y: 30 },
     animate: { opacity: 1, y: 0, transition: { duration: 0.8 } },
@@ -45,7 +44,6 @@ const LoginPage = () => {
 
     try {
       await login(formData.email, formData.password);
-      // Navigation handled in login function
     } catch (err) {
       setError("Invalid email or password. Please try again.");
     }
@@ -54,7 +52,6 @@ const LoginPage = () => {
   return (
     <div className="w-full h-screen">
       <div className="flex h-screen relative overflow-hidden">
-        {/* Left Side - Hidden on mobile */}
         <div className="hidden md:block md:w-[calc((((100%-260px)/12*8)+(9*20px)))] h-screen relative bg-white">
           <motion.div
             className="h1 text-black pl-[20px] mt-[20vh]"

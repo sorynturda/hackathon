@@ -14,7 +14,6 @@ const Button = () => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Background layer with color shift - inverted from accent to black */}
       <motion.div
         className="absolute inset-0 z-0"
         initial={{ backgroundColor: "#EC6B2D" }}
@@ -24,12 +23,10 @@ const Button = () => {
         transition={{ duration: 0.3 }}
       />
 
-      {/* Arrow with slight movement */}
       <div className="relative z-10">
         <Arrow width={40} />
       </div>
 
-      {/* Text reveal effect */}
       <div className="relative overflow-hidden pl-1 z-10">
         <motion.div
           className="text-black h3"
