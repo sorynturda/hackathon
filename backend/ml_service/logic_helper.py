@@ -6,7 +6,7 @@ from datetime import datetime
 from google import genai
 from google.genai import types
 
-client = genai.Client(api_key="AIzaSyCvdbsLw-GOzbq0SXhg5b0bAN06fsAA2h4")  
+client = genai.Client(api_key="")  
 
 def fuzzy_similarity(str1, str2):
         """Calculate fuzzy string similarity using SequenceMatcher"""
