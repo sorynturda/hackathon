@@ -1,0 +1,40 @@
+{
+  "fields": [
+    {
+      "numDimensions": 768,
+      "path": "full_text_embedding",
+      "similarity": "cosine",
+      "type": "vector"
+    },
+    {
+      "numDimensions": 768,
+      "path": "extracted_info.KEY_RESPONSIBILITIES_EMBEDDING",
+      "similarity": "cosine",
+      "type": "vector"
+    },
+    {
+      "path": "_id",
+      "type": "filter"
+    },
+    {
+      "path": "user_id",
+      "type": "filter"
+    },
+    {
+      "path": "extracted_info.JOB_TITLE",
+      "type": "filter"
+    },
+    {
+      "path": "extracted_info.KEY_RESPONSIBILITIES",
+      "type": "filter"
+    },
+    {
+      "path": "extracted_info.REQUIRED_QUALIFICATIONS",
+      "type": "filter"
+    },
+    {
+      "path": "extracted_info.OPTIONAL_SKILLS",
+      "type": "filter"
+    }
+  ]
+}
