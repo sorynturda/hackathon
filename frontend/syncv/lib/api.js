@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { tokenUtils } from "./tokenUtils";
 
 const API_URL = "http://localhost:5001";
 
@@ -16,11 +17,7 @@ const getApiClient = async () => {
   
   apiClient.interceptors.request.use(async (config) => {
    
-    const token = localStorage.getItem('auth_token') || 
-                 document.cookie
-                   .split('; ')
-                   .find(row => row.startsWith('auth_token='))
-                   ?.split('=')[1];
+    const token = tokenUtils.getToken();
     
     if (token) {
       console.log("Using token:", token.substring(0, 20) + "...");

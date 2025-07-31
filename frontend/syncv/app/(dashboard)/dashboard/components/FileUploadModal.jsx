@@ -15,7 +15,9 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
 
   useEffect(() => {
     if (isOpen) {
+      // Instead of blocking all scroll, we'll add a class to handle this better
       document.body.style.overflow = "hidden";
+      // Allow scroll within the modal by ensuring it has proper scroll container
     } else {
       document.body.style.overflow = "unset";
     }
@@ -108,7 +110,7 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
             duration: 0.4,
             ease: [0.25, 1, 0.5, 1],
           }}
-          className="fixed inset-0 bg-black z-[9999]"
+          className="fixed inset-0 bg-black z-[9999] overflow-hidden"
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -132,14 +134,18 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
             </svg>
           </button>
 
-          <div className="absolute inset-0 flex flex-col">
-            <div className="pt-16 pb-8 px-4 text-center">
-              <h1 className="h1 text-white mb-8">{title}</h1>
+          <div className="absolute inset-0 flex flex-col overflow-hidden">
+            <div className="pt-8 pb-8 px-4 text-center">
+              <h1 className="h3 text-white ">{title}</h1>
             </div>
 
             <div
-              className="px-4 flex-1 overflow-hidden"
-              style={{ height: "calc(100% - 180px - 80px)" }}
+              className="px-4 flex-1 overflow-y-auto pb-24"
+              style={{ 
+                scrollBehavior: 'smooth',
+                WebkitOverflowScrolling: 'touch',
+                overscrollBehavior: 'contain'
+              }}
             >
               <div className="mx-auto mb-4" style={{ maxWidth: "32rem" }}>
                 <div
@@ -194,8 +200,11 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
                   <div
                     className="border border-white/10 rounded-md p-4 overflow-y-auto"
                     style={{
-                      height: "calc(100% - 80px)",
-                      maxHeight: "calc(100vh - 500px)",
+                      minHeight: "200px",
+                      maxHeight: "60vh",
+                      scrollBehavior: 'smooth',
+                      WebkitOverflowScrolling: 'touch',
+                      overscrollBehavior: 'contain'
                     }}
                   >
                     <div className="flex flex-col gap-4">
@@ -237,12 +246,12 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
             </div>
 
             {files.length > 0 && (
-              <div className="absolute bottom-0 w-full py-6 px-4 bg-black/80 backdrop-blur-sm border-t border-white/10 flex justify-center">
+              <div className="absolute bottom-0 w-full py-2 px-2 bg-black/80 backdrop-blur-sm border-t border-white/10 flex justify-center">
                 <button
                   onClick={handleUpload}
                   disabled={uploading}
                   className={`
-                    px-8 py-3 h3 rounded-md transition-colors w-64
+                    px-4 py-0 h3 rounded-md transition-colors w-64
                     ${
                       uploading
                         ? "bg-white/20 text-white/50 cursor-not-allowed"
