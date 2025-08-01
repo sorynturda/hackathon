@@ -5,6 +5,9 @@ import { useMatchApi } from "../../../../lib/api";
 import Layout from "../../../../components/layout/Layout";
 import { motion, AnimatePresence } from "framer-motion";
 import Portal from "@/components/common/Portal";
+import { SkeletonList, SkeletonCard } from "@/components/common/Skeleton";
+import { EmptyStateNoCVs } from "@/components/common/EmptyState";
+import FileUploadModal from "../components/FileUploadModal";
 import { useRouter } from "next/navigation";
 
 const CVManager = () => {
@@ -15,6 +18,7 @@ const CVManager = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [showMatchSuccessModal, setShowMatchSuccessModal] = useState(false);
+  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
   const [selectedCV, setSelectedCV] = useState(null);
   const router = useRouter();
 
@@ -138,6 +142,11 @@ const CVManager = () => {
     setShowMatchSuccessModal(false);
   };
 
+  // Handler pentru a deschide modal de upload
+  const handleUploadCVFromEmpty = () => {
+    setIsCVModalOpen(true);
+  };
+
   return (
     <div className="w-full">
       <Layout>
@@ -174,14 +183,15 @@ const CVManager = () => {
 
           <div className="bg-white rounded-lg">
             {loading ? (
-              <div className="p-8 text-center">
-                <div className="inline-block w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-                <p className="body-small text-black/60 mt-2">Loading CVs...</p>
+              <div className="p-6">
+                <SkeletonList 
+                  count={4} 
+                  SkeletonComponent={SkeletonCard}
+                  className="space-y-4"
+                />
               </div>
             ) : filteredCVs.length === 0 ? (
-              <div className="p-8 text-center body text-black/50">
-                No CVs found in this category
-              </div>
+              <EmptyStateNoCVs onUploadCV={handleUploadCVFromEmpty} />
             ) : (
               <div className="divide-y-2 divide-black">
                 {filteredCVs.map((cv, index) => (
@@ -448,6 +458,15 @@ const CVManager = () => {
           </Portal>
         )}
       </AnimatePresence>
+
+      {/* Upload Modal */}
+      <FileUploadModal
+        isOpen={isCVModalOpen}
+        onClose={() => setIsCVModalOpen(false)}
+        title="Upload CV"
+        fileType="cv"
+        onUploadSuccess={fetchCVs}
+      />
     </div>
   );
 };

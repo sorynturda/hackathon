@@ -111,18 +111,18 @@ const MatchDetails = () => {
   const scorePercent = Math.round(matchData.score * 10);
 
   return (
-    <div className="w-full min-h-screen pt-[5vh] pb-[10vh]">
+    <div className="w-full min-h-screen">
       <Layout>
-        <div className="col-span-10 col-start-2">
+        <div className="col-start-1 col-span-11 max-md:mt-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="flex items-center mb-12"
+            className="flex items-center mb-8"
           >
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 hover:text-accent transition-colors"
+              className="flex items-center gap-2 hover:text-accent transition-colors body-small"
             >
               <svg
                 width="24"
@@ -150,20 +150,20 @@ const MatchDetails = () => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="col-span-12 lg:col-span-8"
             >
-              <div className="border-b border-black/10 pb-8 mb-8">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div className="bg-white border-2 border-black rounded-lg p-6 mb-6">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
                   <div>
-                    <div className="body-small text-black/60">
+                    <div className="body-small text-black/60 mb-1">
                       Match #{matchData.id}
                     </div>
-                    <h1 className="h2 text-black">{matchData.candidateName}</h1>
-                    <div className="body text-black/80 mt-1 pt-5">
+                    <h1 className="h2 text-black mb-2">{matchData.candidateName}</h1>
+                    <div className="body text-black/80">
                       {matchData.position}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <div className="body-small text-black/60">
+                      <div className="body-small text-black/60 mb-1">
                         Match Score
                       </div>
                       <div className={`h2 ${getScoreColor(matchData.score)}`}>
@@ -174,17 +174,18 @@ const MatchDetails = () => {
                 </div>
               </div>
 
-              <div className="mb-8 border-b border-black/10">
-                <div className="flex space-x-8">
+              <div className="bg-white border-2 border-black rounded-lg">
+                <div className="border-b-2 border-black px-6 py-4">
+                  <div className="flex space-x-8">
                   {["overview", "skills", "reasoning"].map((tab) => (
                     <button
                       key={tab}
-                      className={`pb-3 relative capitalize ${
+                      className={`pb-3 relative capitalize body ${
                         activeTab === tab ? "text-black" : "text-black/40"
-                      }`}
+                      } hover:text-black transition-colors`}
                       onClick={() => setActiveTab(tab)}
                     >
-                      <span className="body">{tab}</span>
+                      {tab}
                       {activeTab === tab && (
                         <motion.div
                           layoutId="activeTab"
@@ -193,44 +194,47 @@ const MatchDetails = () => {
                       )}
                     </button>
                   ))}
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                  {activeTab === "overview" && (
+                    <OverviewTab
+                      matchData={matchData}
+                      scorePercent={scorePercent}
+                      getScoreColor={getScoreBgColor}
+                    />
+                  )}
+
+                  {activeTab === "skills" && (
+                    <SkillsTab
+                      matchData={matchData}
+                      getScoreColor={getScoreColor}
+                    />
+                  )}
+
+                    {activeTab === "reasoning" && (
+                      <ReasoningTab matchData={matchData} />
+                    )}
+                  </motion.div>
                 </div>
               </div>
-
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {activeTab === "overview" && (
-                  <OverviewTab
-                    matchData={matchData}
-                    scorePercent={scorePercent}
-                    getScoreColor={getScoreBgColor}
-                  />
-                )}
-
-                {activeTab === "skills" && (
-                  <SkillsTab
-                    matchData={matchData}
-                    getScoreColor={getScoreColor}
-                  />
-                )}
-
-                {activeTab === "reasoning" && (
-                  <ReasoningTab matchData={matchData} />
-                )}
-              </motion.div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="col-span-12 lg:col-span-4"
+              className="col-span-12 lg:col-span-4 space-y-6"
             >
-              <div className="bg-black text-white p-6 mb-6">
-                <h3 className="h3 mb-6">Match Details</h3>
+              <div className="bg-black text-white border-2 border-black rounded-lg p-6">
+                <h3 className="body font-semibold mb-6">Match Details</h3>
 
                 <div className="space-y-4">
                   <div>
@@ -257,13 +261,13 @@ const MatchDetails = () => {
                 </div>
               </div>
 
-              <div className="border border-black/10 p-6">
-                <h3 className="h3 mb-6">Actions</h3>
+              <div className="bg-white border-2 border-black rounded-lg p-6">
+                <h3 className="body font-semibold mb-6">Actions</h3>
 
                 <div className="space-y-4">
                   <button
                     onClick={() => generateMatchReport(matchData)}
-                    className="w-full bg-accent text-black body py-3 hover:bg-black hover:text-white transition-colors duration-300"
+                    className="w-full bg-accent text-black body py-3 px-4 border-2 border-accent rounded-md hover:bg-black hover:text-white hover:border-black transition-all duration-300"
                   >
                     Download Match Report
                   </button>
@@ -279,12 +283,12 @@ const MatchDetails = () => {
 
 const OverviewTab = ({ matchData, scorePercent, getScoreColor }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h3 className="h3 mb-4">Match Overview</h3>
-        <div className="h-3 bg-black/10 rounded-full w-full mb-1 overflow-hidden">
+        <h3 className="body font-semibold mb-4">Match Overview</h3>
+        <div className="h-3 bg-black/10 rounded-full w-full mb-2 overflow-hidden border border-black/20">
           <div
-            className={`h-full ${getScoreColor(matchData.score)}`}
+            className={`h-full transition-all duration-500 ease-out ${getScoreColor(matchData.score)}`}
             style={{ width: `${scorePercent}%` }}
           />
         </div>
@@ -295,11 +299,11 @@ const OverviewTab = ({ matchData, scorePercent, getScoreColor }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="border border-black/10 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white border-2 border-black rounded-lg p-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-3 h-3 rounded-full bg-green"></div>
-            <h4 className="body font-semibold">
+            <h4 className="body-small font-semibold">
               Matching Skills ({matchData.matchingSkills.length})
             </h4>
           </div>
@@ -309,7 +313,7 @@ const OverviewTab = ({ matchData, scorePercent, getScoreColor }) => {
               {matchData.matchingSkills.map((skill, index) => (
                 <span
                   key={index}
-                  className="inline-block bg-green/10 text-green py-1 px-3 rounded-full body-small"
+                  className="inline-block bg-green/10 text-green py-1 px-3 rounded-full body-small border border-green/20"
                 >
                   {skill}
                 </span>
@@ -320,10 +324,10 @@ const OverviewTab = ({ matchData, scorePercent, getScoreColor }) => {
           )}
         </div>
 
-        <div className="border border-black/10 p-6">
+        <div className="bg-white border-2 border-black rounded-lg p-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-3 h-3 rounded-full bg-red"></div>
-            <h4 className="body font-semibold">
+            <h4 className="body-small font-semibold">
               Missing Skills ({matchData.missingSkills.length})
             </h4>
           </div>
@@ -333,7 +337,7 @@ const OverviewTab = ({ matchData, scorePercent, getScoreColor }) => {
               {matchData.missingSkills.map((skill, index) => (
                 <span
                   key={index}
-                  className="inline-block bg-red/10 text-red py-1 px-3 rounded-full body-small"
+                  className="inline-block bg-red/10 text-red py-1 px-3 rounded-full body-small border border-red/20"
                 >
                   {skill}
                 </span>
@@ -348,16 +352,16 @@ const OverviewTab = ({ matchData, scorePercent, getScoreColor }) => {
       </div>
 
       <div
-        className={`p-6 rounded-sm ${
+        className={`p-4 rounded-lg border-2 ${
           scorePercent >= 75
-            ? "bg-green/10"
+            ? "bg-green/5 border-green/20"
             : scorePercent >= 50
-            ? "bg-accent/10"
-            : "bg-red/10"
+            ? "bg-accent/5 border-accent/20"
+            : "bg-red/5 border-red/20"
         }`}
       >
-        <h4 className="body font-semibold mb-2">Recommendation</h4>
-        <p className="body">
+        <h4 className="body-small font-semibold mb-2">Recommendation</h4>
+        <p className="body-small">
           {scorePercent >= 75
             ? "Strong match. Candidate has most required skills for this position."
             : scorePercent >= 50

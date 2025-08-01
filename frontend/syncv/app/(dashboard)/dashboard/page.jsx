@@ -8,6 +8,7 @@ import MatchList from "./components/MatchList";
 import SearchAndFilter from "./components/SearchAndFilter";
 import FileUploadModal from "./components/FileUploadModal";
 import Portal from "@/components/common/Portal";
+import { SkeletonStatsCard, SkeletonList, SkeletonMatchCard } from "@/components/common/Skeleton";
 import { useCVApi, useJDApi } from "@/lib/api";
 import { useMatchApi } from "@/lib/api";
 
@@ -187,9 +188,19 @@ const Dashboard = () => {
     <div className="w-full">
       <Layout className="">
         <div className="col-start-1 col-span-12 lg:col-span-7 flex flex-col md:flex-row gap-4 md:gap-6 mb-6 lg:mb-12">
-          <StatsCard title="CV Collection" count={cvCount} />
-          <StatsCard title="JD Collection" count={jdCount} />
-          <StatsCard title="Matches Collection" count={matchCount} />
+          {loading ? (
+            <>
+              <SkeletonStatsCard className="flex-1" />
+              <SkeletonStatsCard className="flex-1" />
+              <SkeletonStatsCard className="flex-1" />
+            </>
+          ) : (
+            <>
+              <StatsCard title="CV Collection" count={cvCount} />
+              <StatsCard title="JD Collection" count={jdCount} />
+              <StatsCard title="Matches Collection" count={matchCount} />
+            </>
+          )}
         </div>
 
         <div className="col-start-1 col-span-12 lg:col-start-9 lg:col-span-3 md:h-auto lg:h-64 mt-2 lg:mt-0 mb-8 lg:mb-0">

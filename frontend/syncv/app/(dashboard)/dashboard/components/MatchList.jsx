@@ -2,6 +2,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { SkeletonList, SkeletonMatchCard } from "../../../../components/common/Skeleton";
+import { EmptyStateNoMatches, EmptyStateSearchResults } from "../../../../components/common/EmptyState";
 
 const MatchList = ({
   matches,
@@ -41,11 +43,12 @@ const MatchList = ({
         <div className="p-4 sm:p-6 border-b-2 border-black">
           <h2 className="body">List of Candidates</h2>
         </div>
-        <div className="flex-grow flex items-center justify-center">
-          <div className="p-8 text-center">
-            <div className="inline-block w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-            <p className="body-small text-black/60 mt-2">Loading matches...</p>
-          </div>
+        <div className="flex-grow p-4 sm:p-6">
+          <SkeletonList 
+            count={5} 
+            SkeletonComponent={SkeletonMatchCard}
+            className="space-y-4"
+          />
         </div>
       </div>
     );
@@ -138,11 +141,14 @@ const MatchList = ({
           ))}
 
           {filteredMatches.length === 0 && (
-            <div className="p-8 text-center body text-black/50">
-              {searchTerm
-                ? "No matches found for your search criteria."
-                : "No matches found. Run a match by clicking 'Run Match' in CV or JD Manager."}
-            </div>
+            searchTerm ? (
+              <EmptyStateSearchResults 
+                searchTerm={searchTerm}
+                onClearSearch={() => {/* This will be handled by parent component */}}
+              />
+            ) : (
+              <EmptyStateNoMatches />
+            )
           )}
         </div>
       </div>
