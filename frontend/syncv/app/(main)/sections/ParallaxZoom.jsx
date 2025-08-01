@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { colors } from "../../../config/colors";
 
 const ParallaxZoom = () => {
   const containerRef = useRef(null);
@@ -104,10 +105,10 @@ const ParallaxZoom = () => {
               <motion.div
                 className="absolute inset-0 "
                 style={{
-                  background: `linear-gradient(90deg, #EC6B2D 100%, #EC6B2D 100%) top left no-repeat,
-                             linear-gradient(0deg, #EC6B2D 100%, #EC6B2D 100%) top right no-repeat,
-                             linear-gradient(-90deg, #EC6B2D 100%, #EC6B2D 100%) bottom right no-repeat,
-                             linear-gradient(180deg, #EC6B2D 100%, #EC6B2D 100%) bottom left no-repeat`,
+                  background: `linear-gradient(90deg, ${colors.accent} 100%, ${colors.accent} 100%) top left no-repeat,
+                             linear-gradient(0deg, ${colors.accent} 100%, ${colors.accent} 100%) top right no-repeat,
+                             linear-gradient(-90deg, ${colors.accent} 100%, ${colors.accent} 100%) bottom right no-repeat,
+                             linear-gradient(180deg, ${colors.accent} 100%, ${colors.accent} 100%) bottom left no-repeat`,
                   backgroundSize: useTransform(borderProgress, (value) => {
                     const percent = (value / 400) * 100;
                     const side = Math.min(percent, 100);

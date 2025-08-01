@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 const CVManager = () => {
   const [cvs, setCvs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [matchLoading, setMatchLoading] = useState(false);
+  const [matchingCvId, setMatchingCvId] = useState(null);
   const [filter, setFilter] = useState("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
@@ -58,21 +58,17 @@ const CVManager = () => {
 
   const handleRunMatch = async (cvId, cvName) => {
     try {
-      setMatchLoading(true);
+      setMatchingCvId(cvId);
       setSelectedCV({ id: cvId, name: cvName });
 
       const matchResults = await matchCVWithJDs(cvId);
       console.log("Match results:", matchResults);
 
       setShowMatchSuccessModal(true);
-
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 2000);
     } catch (error) {
       console.error(`Error running match for CV ID: ${cvId}`, error);
     } finally {
-      setMatchLoading(false);
+      setMatchingCvId(null);
     }
   };
 
@@ -239,12 +235,12 @@ const CVManager = () => {
                       </button>
                       <button
                         onClick={() => handleRunMatch(cv.id, cv.name)}
-                        disabled={matchLoading}
+                        disabled={matchingCvId === cv.id}
                         className={`${
-                          matchLoading ? "bg-accent/70" : "bg-accent"
+                          matchingCvId === cv.id ? "bg-accent/70" : "bg-accent"
                         } text-white px-3 sm:px-4 py-2 rounded-md body-small hover:bg-black transition-colors flex items-center gap-2`}
                       >
-                        {matchLoading ? (
+                        {matchingCvId === cv.id ? (
                           <>
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             <span className="hidden sm:inline">
@@ -405,10 +401,10 @@ const CVManager = () => {
                 className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full border-2 border-accent"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center gap-4">
-                  <div className="bg-accent/10 p-3 rounded-full">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-accent/10 p-2 rounded-full flex-shrink-0">
                     <svg
-                      className="w-6 h-6 text-accent"
+                      className="w-5 h-5 text-accent"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -421,22 +417,30 @@ const CVManager = () => {
                       />
                     </svg>
                   </div>
-                  <h3 className="h3 text-black">Match Completed</h3>
+                  <h3 className="h3 text-black leading-none">Match Completed</h3>
                 </div>
-                <p className="body mt-4 mb-6">
+                <p className="body mb-6 break-words overflow-hidden">
                   Successfully matched CV "
-                  <span className="font-semibold">
-                    {selectedCV?.name || ""}
+                  <span className="font-semibold truncate inline-block max-w-[240px] align-bottom">
+                    {selectedCV?.name || "Unnamed CV"}
                   </span>
-                  " with available Job Descriptions. Redirecting to dashboard to
-                  view results...
+                  " with available Job Descriptions. You can now view the results in your dashboard.
                 </p>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-4">
                   <button
                     onClick={handleCloseMatchSuccessModal}
+                    className="px-4 py-2 rounded-md body-small bg-white border-2 border-black text-black hover:bg-black hover:text-white transition-colors"
+                  >
+                    Stay Here
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleCloseMatchSuccessModal();
+                      router.push("/dashboard");
+                    }}
                     className="px-4 py-2 rounded-md body-small bg-accent text-white hover:bg-accent/80 transition-colors"
                   >
-                    Close
+                    View Results
                   </button>
                 </div>
               </motion.div>

@@ -4,10 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import Portal from "../../../../components/common/Portal";
 import { useCVApi, useJDApi } from "../../../../lib/api";
 
-const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
+const FileUploadOverlay = ({ isOpen, onClose, title, fileType, onUploadSuccess }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const fileInputRef = useRef(null);
 
   const { uploadCV, uploadMultipleCVs } = useCVApi();
@@ -15,9 +17,10 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
 
   useEffect(() => {
     if (isOpen) {
-      // Instead of blocking all scroll, we'll add a class to handle this better
+      setError(null);
+      setSuccess(false);
+      setFiles([]);
       document.body.style.overflow = "hidden";
-      // Allow scroll within the modal by ensuring it has proper scroll container
     } else {
       document.body.style.overflow = "unset";
     }
@@ -42,11 +45,13 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
 
     const droppedFiles = Array.from(e.dataTransfer.files);
     setFiles((prev) => [...prev, ...droppedFiles]);
+    setError(null);
   };
 
   const handleFileSelect = (e) => {
     const selectedFiles = Array.from(e.target.files);
     setFiles((prev) => [...prev, ...selectedFiles]);
+    setError(null);
   };
 
   const removeFile = (index) => {
@@ -55,6 +60,8 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
 
   const handleUpload = async () => {
     setUploading(true);
+    setError(null);
+    setSuccess(false);
     console.log("Starting upload with files:", files);
 
     try {
@@ -84,7 +91,17 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
 
       if (response.data) {
         console.log("Upload successful");
-        onClose();
+        setSuccess(true);
+        setFiles([]);
+        
+        setTimeout(() => {
+          onClose();
+          setSuccess(false);
+          
+          if (onUploadSuccess) {
+            onUploadSuccess();
+          }
+        }, 1500);
       }
     } catch (error) {
       console.error("Upload error details:", {
@@ -93,6 +110,8 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
         status: error.response?.status,
         headers: error.response?.headers,
       });
+
+      setError("Upload failed. Please check if the file already exists, is in a supported format (PDF, DOC, DOCX), or try again later.");
     } finally {
       setUploading(false);
     }
@@ -137,6 +156,28 @@ const FileUploadOverlay = ({ isOpen, onClose, title, fileType }) => {
           <div className="absolute inset-0 flex flex-col overflow-hidden">
             <div className="pt-8 pb-8 px-4 text-center">
               <h1 className="h3 text-white ">{title}</h1>
+              
+              {/* Error Message */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 mx-auto max-w-md px-4 py-3 bg-red/10 border border-red/30 rounded-md"
+                >
+                  <p className="body-small text-red">{error}</p>
+                </motion.div>
+              )}
+              
+              {/* Success Message */}
+              {success && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 mx-auto max-w-md px-4 py-3 bg-green/10 border border-green/30 rounded-md"
+                >
+                  <p className="body-small text-green">Upload successful! ✓</p>
+                </motion.div>
+              )}
             </div>
 
             <div

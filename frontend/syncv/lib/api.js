@@ -249,7 +249,8 @@ export function useMatchApi() {
       }
       
       throw error;
-    }};
+    }
+  };
 
     const deleteMatch = async (matchId) => {
       try {

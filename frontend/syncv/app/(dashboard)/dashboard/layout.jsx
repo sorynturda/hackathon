@@ -283,7 +283,7 @@ export default function DashboardLayout({ children }) {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.15, delay: 0.05 }}
                     >
-                      <span className="whitespace-nowrap text-black body-small">
+                      <span className="whitespace-nowrap ml-3 border-black text-black body-small">
                         {button.label}
                       </span>
                     </motion.div>
@@ -293,7 +293,7 @@ export default function DashboardLayout({ children }) {
 
               <ButtonComponent
                 {...buttonProps}
-                className={`w-12 h-12 flex items-center justify-center rounded-md z-10 relative ${
+                className={`w-12 h-12 flex items-center justify-center rounded-md  z-10 relative ${
                   active
                     ? "bg-black shadow-md transform scale-110"
                     : "hover:bg-black/10"

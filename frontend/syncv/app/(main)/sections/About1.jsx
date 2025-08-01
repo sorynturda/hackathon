@@ -45,7 +45,7 @@ const About1 = () => {
             viewBox="0 0 100 100"
             preserveAspectRatio="xMidYMid meet"
           >
-            <circle cx="50" cy="50" r="40" fill="#EC6B2D" />
+            <circle cx="50" cy="50" r="40" className="fill-accent" />
           </motion.svg>
           <motion.div
             style={{

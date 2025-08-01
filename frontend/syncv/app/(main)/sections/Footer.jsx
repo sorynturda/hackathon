@@ -45,10 +45,10 @@ const Footer = () => {
                       animate={{ opacity: isGetStartedHovered ? 1 : 0 }}
                       transition={{ duration: 0.3 }}
                     />
-                    <div className="body flex justify-center relative z-10 overflow-hidden">
+                    <div className="body relative z-10 overflow-hidden text-center">
                       <motion.div
                         initial={{ y: 0 }}
-                        animate={{ y: isGetStartedHovered ? -30 : 0 }}
+                        animate={{ y: isGetStartedHovered ? -60 : 0 }}
                         transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
                         className="text-white"
                       >
@@ -57,7 +57,7 @@ const Footer = () => {
                       <motion.div
                         className="text-black absolute top-0 left-0 w-full text-center"
                         initial={{ y: 30 }}
-                        animate={{ y: isGetStartedHovered ? 0 : 30 }}
+                        animate={{ y: isGetStartedHovered ? 0 : 60 }}
                         transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
                       >
                         GET STARTED
@@ -78,7 +78,7 @@ const Footer = () => {
                       animate={{ opacity: isAboutHovered ? 1 : 0 }}
                       transition={{ duration: 0.3 }}
                     />
-                    <div className="body flex justify-center relative z-10 overflow-hidden">
+                    <div className="body relative z-10 overflow-hidden text-center">
                       <motion.div
                         initial={{ y: 0 }}
                         animate={{ y: isAboutHovered ? -30 : 0 }}

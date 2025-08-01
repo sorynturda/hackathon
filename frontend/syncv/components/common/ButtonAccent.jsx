@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import Arrow from "./Arrow";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import {  motion } from "framer-motion";
+import { colors } from "../../config/colors";
 
 const Button = () => {
   const [isHovered, setIsHovered] = useState(false);
@@ -16,9 +17,9 @@ const Button = () => {
     >
       <motion.div
         className="absolute inset-0 z-0"
-        initial={{ backgroundColor: "#EC6B2D" }}
+        initial={{ backgroundColor: colors.accent }}
         animate={{
-          backgroundColor: isHovered ? "#181818" : "#EC6B2D",
+          backgroundColor: isHovered ? "#181818" : colors.accent,
         }}
         transition={{ duration: 0.3 }}
       />

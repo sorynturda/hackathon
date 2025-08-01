@@ -13,7 +13,7 @@ function StatsCard({ title, count }) {
       transition={{ duration: 0.3 }}
     >
       <h3 className="body-small mb-1 sm:mb-2 md:mb-4 text-center">{title}</h3>
-      <div className="text-xl sm:text-2xl md:h3 flex items-center justify-center">
+      <div className=" flex items-center h3 font-bold justify-center">
         {count}
         <span className="ml-1 sm:ml-2 text-xs sm:text-sm">↑</span>
       </div>

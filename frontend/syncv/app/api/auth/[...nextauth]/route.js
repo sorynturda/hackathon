@@ -1,4 +1,3 @@
-// app/api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
@@ -21,7 +20,7 @@ export const authOptions = {
           });
 
           if (response.data && response.data.data && response.data.data.token) {
-            // Return user object that NextAuth can use
+           
             return {
               id: response.data.data.id || credentials.email,
               email: credentials.email,

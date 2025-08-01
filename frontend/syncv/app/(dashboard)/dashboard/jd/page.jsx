@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 const JDManager = () => {
   const [jds, setJDs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [matchLoading, setMatchLoading] = useState(false);
+  const [matchingJdId, setMatchingJdId] = useState(null);
   const [filter, setFilter] = useState("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
@@ -119,7 +119,7 @@ const JDManager = () => {
     }
 
     try {
-      setMatchLoading(true);
+      setMatchingJdId(currentJdForSkills.id);
       setShowSkillsModal(false);
       setSelectedJD(currentJdForSkills);
 
@@ -149,7 +149,7 @@ const JDManager = () => {
     } catch (error) {
       console.error(`Error matching JD ID: ${currentJdForSkills?.id}`, error);
     } finally {
-      setMatchLoading(false);
+      setMatchingJdId(null);
     }
   };
 
@@ -328,12 +328,12 @@ const JDManager = () => {
                       </button>
                       <button
                         onClick={() => handleRunMatch(jd.id, jd.name)}
-                        disabled={matchLoading}
+                        disabled={matchingJdId === jd.id}
                         className={`${
-                          matchLoading ? "bg-accent/70" : "bg-accent"
+                          matchingJdId === jd.id ? "bg-accent/70" : "bg-accent"
                         } text-white px-3 sm:px-4 py-2 rounded-md body-small hover:bg-black transition-colors flex items-center gap-2`}
                       >
-                        {matchLoading ? (
+                        {matchingJdId === jd.id ? (
                           <>
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             <span className="hidden sm:inline">
@@ -492,10 +492,10 @@ const JDManager = () => {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full border-2 border-accent"
+                className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full border-2 border-black"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 mb-4">
                   <div className="bg-accent/10 p-3 rounded-full">
                     <svg
                       className="w-6 h-6 text-accent"
@@ -511,9 +511,9 @@ const JDManager = () => {
                       />
                     </svg>
                   </div>
-                  <h3 className="h3 text-black">Match Completed</h3>
+                  <h3 className="h3 text-black leading-none">Match Completed</h3>
                 </div>
-                <p className="body mt-4 mb-6">
+                <p className="body mb-6">
                   Successfully matched Job Description "
                   <span className="font-semibold">
                     {selectedJD?.name || ""}
@@ -521,7 +521,7 @@ const JDManager = () => {
                   " with available CVs. Redirecting to dashboard to view
                   results...
                 </p>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-4">
                   <button
                     onClick={handleCloseMatchSuccessModal}
                     className="px-4 py-2 rounded-md body-small bg-accent text-white hover:bg-accent/80 transition-colors"
@@ -742,16 +742,16 @@ const JDManager = () => {
                   </button>
                   <button
                     onClick={handleConfirmMatch}
-                    disabled={matchLoading || totalWeight !== 100}
+                    disabled={matchingJdId !== null || totalWeight !== 100}
                     className={`px-4 py-2 rounded-md body-small ${
-                      matchLoading
+                      matchingJdId !== null
                         ? "bg-accent/70 text-white"
                         : totalWeight !== 100
                         ? "bg-black/30 text-white cursor-not-allowed"
                         : "bg-accent text-white hover:bg-accent/80"
                     } transition-colors flex items-center gap-2`}
                   >
-                    {matchLoading ? (
+                    {matchingJdId !== null ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         <span>Processing...</span>
